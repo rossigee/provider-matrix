@@ -24,5 +24,3 @@ limitations under the License.
 //go:generate go run github.com/crossplane/crossplane-tools/cmd/angryjet generate-methodsets ./...
 
 package apis
-
-import _ "sigs.k8s.io/controller-tools/cmd/controller-gen" //nolint:typecheck

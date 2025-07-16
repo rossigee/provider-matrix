@@ -79,10 +79,10 @@ func (suite *IntegrationTestSuite) TestProviderConfig() {
 			HomeserverURL: "https://matrix.example.com",
 			AdminMode:    boolPtr(true),
 			Credentials: v1beta1.ProviderCredentials{
-				Source: "Secret",
-				CommonCredentialSelectors: v1beta1.CommonCredentialSelectors{
-					SecretRef: &v1beta1.SecretKeySelector{
-						SecretReference: v1beta1.SecretReference{
+				Source: xpv1.CredentialsSourceSecret,
+				CommonCredentialSelectors: xpv1.CommonCredentialSelectors{
+					SecretRef: &xpv1.SecretKeySelector{
+						SecretReference: xpv1.SecretReference{
 							Name:      "matrix-creds",
 							Namespace: "default",
 						},

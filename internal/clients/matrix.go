@@ -26,6 +26,7 @@ import (
 	"maunium.net/go/mautrix"
 	"maunium.net/go/mautrix/id"
 	"github.com/pkg/errors"
+	"k8s.io/apimachinery/pkg/types"
 
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -126,24 +127,25 @@ func GetConfig(ctx context.Context, c client.Client, mg resource.Managed) (*Conf
 // UseProviderConfig extracts configuration from a ProviderConfig
 func UseProviderConfig(ctx context.Context, c client.Client, mg resource.Managed) (*Config, error) {
 	pc := &v1beta1.ProviderConfig{}
-	if err := c.Get(ctx, resource.ExtractProviderConfigName(mg), pc); err != nil {
+	if err := c.Get(ctx, types.NamespacedName{Name: mg.GetProviderConfigReference().Name}, pc); err != nil {
 		return nil, errors.Wrap(err, "cannot get referenced ProviderConfig")
 	}
 
-	t := resource.NewProviderConfigUsageTracker(c, &v1beta1.ProviderConfigUsage{})
-	if err := t.Track(ctx, mg); err != nil {
-		return nil, errors.Wrap(err, "cannot track ProviderConfig usage")
-	}
+	// TODO: Fix ProviderConfigUsage tracking with newer crossplane-runtime
+	// t := resource.NewProviderConfigUsageTracker(c, &v1beta1.ProviderConfigUsage{})
+	// if err := t.Track(ctx, mg); err != nil {
+	// 	return nil, errors.Wrap(err, "cannot track ProviderConfig usage")
+	// }
 
-	data, err := resource.CommonCredentialExtractor(ctx, pc.Spec.Credentials.Source, c, pc.Spec.Credentials.CommonCredentialSelectors)
+	credBytes, err := resource.CommonCredentialExtractor(ctx, pc.Spec.Credentials.Source, c, pc.Spec.Credentials.CommonCredentialSelectors)
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot get credentials")
 	}
 
-	accessToken := string(data[resource.CredentialsKeyPassword])
-	if accessToken == "" {
+	if len(credBytes) == 0 {
 		return nil, errors.New("matrix access token not found in credentials")
 	}
+	accessToken := string(credBytes)
 
 	adminAPIURL := pc.Spec.HomeserverURL
 	if pc.Spec.AdminAPIURL != nil {

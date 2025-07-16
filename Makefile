@@ -158,4 +158,29 @@ run: go.build
 generate: generate.init
 	@$(MAKE) generate.run
 
-.PHONY: cobertura submodules fallback run generate
+# Test targets
+test: test.all
+
+test.unit:
+	@echo "Running unit tests..."
+	@go test ./test/unit_test.go ./test/summary_test.go -v
+
+test.clients:
+	@echo "Running client tests..."
+	@go test ./internal/clients/... -v
+
+test.controller:
+	@echo "Running controller tests..."
+	@go test ./internal/controller/... -v
+
+test.integration:
+	@echo "Running integration tests..."
+	@go test ./test/integration_test.go -v
+
+test.simple:
+	@echo "Running simple tests..."
+	@go test ./simple_test.go -v
+
+test.all: test.unit test.clients test.controller test.integration test.simple
+
+.PHONY: cobertura submodules fallback run generate test test.unit test.clients test.controller test.integration test.simple test.all

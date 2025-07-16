@@ -18,6 +18,7 @@ package v1alpha1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 )
@@ -44,7 +45,9 @@ type SpaceParameters struct {
 	RoomVersion *string `json:"roomVersion,omitempty"`
 
 	// CreationContent is additional content for the m.room.create event
-	CreationContent map[string]interface{} `json:"creationContent,omitempty"`
+	// +kubebuilder:pruning:PreserveUnknownFields
+	// +kubebuilder:validation:Type=object
+	CreationContent *runtime.RawExtension `json:"creationContent,omitempty"`
 
 	// InitialState is a list of state events to set in the new space
 	InitialState []StateEvent `json:"initialState,omitempty"`
@@ -89,7 +92,9 @@ type StateEvent struct {
 
 	// Content is the event content
 	// +kubebuilder:validation:Required
-	Content map[string]interface{} `json:"content"`
+	// +kubebuilder:pruning:PreserveUnknownFields
+	// +kubebuilder:validation:Type=object
+	Content runtime.RawExtension `json:"content"`
 }
 
 // PowerLevelContent defines power levels for space events and users

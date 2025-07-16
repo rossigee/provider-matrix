@@ -18,14 +18,20 @@ package clients
 
 import (
 	"context"
-	"fmt"
-	"time"
 
 	"maunium.net/go/mautrix"
 	"maunium.net/go/mautrix/event"
 	"maunium.net/go/mautrix/id"
 	"github.com/pkg/errors"
 )
+
+// getIntValue returns the value of an int pointer or a default value
+func getIntValue(ptr *int, defaultValue int) int {
+	if ptr != nil {
+		return *ptr
+	}
+	return defaultValue
+}
 
 // User operations
 
@@ -122,8 +128,8 @@ func (c *matrixClient) CreateRoom(ctx context.Context, roomSpec *RoomSpec) (*Roo
 		Name:         roomSpec.Name,
 		Topic:        roomSpec.Topic,
 		RoomAliasName: roomSpec.Alias,
-		Preset:       mautrix.RoomPreset(roomSpec.Preset),
-		Visibility:   mautrix.RoomVisibility(roomSpec.Visibility),
+		Preset:       roomSpec.Preset,
+		Visibility:   roomSpec.Visibility,
 		RoomVersion:  roomSpec.RoomVersion,
 		CreationContent: roomSpec.CreationContent,
 		Invite:       make([]id.UserID, len(roomSpec.Invite)),
@@ -136,7 +142,7 @@ func (c *matrixClient) CreateRoom(ctx context.Context, roomSpec *RoomSpec) (*Roo
 
 	// Convert initial state
 	for _, state := range roomSpec.InitialState {
-		req.InitialState = append(req.InitialState, event.Event{
+		req.InitialState = append(req.InitialState, &event.Event{
 			Type:     event.Type{Type: state.Type},
 			StateKey: &state.StateKey,
 			Content:  event.Content{Parsed: state.Content},
@@ -145,16 +151,22 @@ func (c *matrixClient) CreateRoom(ctx context.Context, roomSpec *RoomSpec) (*Roo
 
 	// Set power level overrides if provided
 	if roomSpec.PowerLevelOverrides != nil {
+		// Convert user IDs in power levels
+		userLevels := make(map[id.UserID]int)
+		for userID, level := range roomSpec.PowerLevelOverrides.Users {
+			userLevels[id.UserID(userID)] = level
+		}
+		
 		req.PowerLevelOverride = &event.PowerLevelsEventContent{
-			Users:         roomSpec.PowerLevelOverrides.Users,
-			Events:        roomSpec.PowerLevelOverrides.Events,
-			EventsDefault: roomSpec.PowerLevelOverrides.EventsDefault,
-			StateDefault:  roomSpec.PowerLevelOverrides.StateDefault,
-			UsersDefault:  roomSpec.PowerLevelOverrides.UsersDefault,
-			Ban:           roomSpec.PowerLevelOverrides.Ban,
-			Kick:          roomSpec.PowerLevelOverrides.Kick,
-			Redact:        roomSpec.PowerLevelOverrides.Redact,
-			Invite:        roomSpec.PowerLevelOverrides.Invite,
+			Users:           userLevels,
+			Events:          roomSpec.PowerLevelOverrides.Events,
+			EventsDefault:   getIntValue(roomSpec.PowerLevelOverrides.EventsDefault, 0),
+			StateDefaultPtr: roomSpec.PowerLevelOverrides.StateDefault,
+			UsersDefault:    getIntValue(roomSpec.PowerLevelOverrides.UsersDefault, 0),
+			BanPtr:          roomSpec.PowerLevelOverrides.Ban,
+			KickPtr:         roomSpec.PowerLevelOverrides.Kick,
+			RedactPtr:       roomSpec.PowerLevelOverrides.Redact,
+			InvitePtr:       roomSpec.PowerLevelOverrides.Invite,
 		}
 	}
 
@@ -242,52 +254,53 @@ func (c *matrixClient) GetRoom(ctx context.Context, roomID string) (*Room, error
 	}
 
 	// Get room name
-	nameEvent, err := c.client.StateEvent(ctx, roomIDObj, event.StateRoomName, "")
-	if err == nil && nameEvent != nil {
-		if nameContent, ok := nameEvent.Content.Parsed.(*event.RoomNameEventContent); ok {
-			room.Name = nameContent.Name
-		}
+	var nameContent event.RoomNameEventContent
+	err := c.client.StateEvent(ctx, roomIDObj, event.StateRoomName, "", &nameContent)
+	if err == nil {
+		room.Name = nameContent.Name
 	}
 
 	// Get room topic
-	topicEvent, err := c.client.StateEvent(ctx, roomIDObj, event.StateRoomTopic, "")
-	if err == nil && topicEvent != nil {
-		if topicContent, ok := topicEvent.Content.Parsed.(*event.RoomTopicEventContent); ok {
-			room.Topic = topicContent.Topic
-		}
+	var topicContent event.TopicEventContent
+	err = c.client.StateEvent(ctx, roomIDObj, event.StateTopic, "", &topicContent)
+	if err == nil {
+		room.Topic = topicContent.Topic
 	}
 
 	// Get canonical alias
-	aliasEvent, err := c.client.StateEvent(ctx, roomIDObj, event.StateCanonicalAlias, "")
-	if err == nil && aliasEvent != nil {
-		if aliasContent, ok := aliasEvent.Content.Parsed.(*event.CanonicalAliasEventContent); ok {
-			room.Alias = aliasContent.Alias.String()
-		}
+	var aliasContent event.CanonicalAliasEventContent
+	err = c.client.StateEvent(ctx, roomIDObj, event.StateCanonicalAlias, "", &aliasContent)
+	if err == nil && aliasContent.Alias != "" {
+		room.Alias = aliasContent.Alias.String()
 	}
 
 	// Get avatar
-	avatarEvent, err := c.client.StateEvent(ctx, roomIDObj, event.StateRoomAvatar, "")
-	if err == nil && avatarEvent != nil {
-		if avatarContent, ok := avatarEvent.Content.Parsed.(*event.RoomAvatarEventContent); ok {
-			room.AvatarURL = avatarContent.URL.String()
-		}
+	var avatarContent event.RoomAvatarEventContent
+	err = c.client.StateEvent(ctx, roomIDObj, event.StateRoomAvatar, "", &avatarContent)
+	if err == nil {
+		room.AvatarURL = avatarContent.URL.String()
 	}
 
 	// Get power levels
-	powerEvent, err := c.client.StateEvent(ctx, roomIDObj, event.StatePowerLevels, "")
-	if err == nil && powerEvent != nil {
-		if powerContent, ok := powerEvent.Content.Parsed.(*event.PowerLevelsEventContent); ok {
-			room.PowerLevels = &PowerLevelContent{
-				Users:         powerContent.Users,
-				Events:        powerContent.Events,
-				EventsDefault: powerContent.EventsDefault,
-				StateDefault:  powerContent.StateDefault,
-				UsersDefault:  powerContent.UsersDefault,
-				Ban:           powerContent.Ban,
-				Kick:          powerContent.Kick,
-				Redact:        powerContent.Redact,
-				Invite:        powerContent.Invite,
-			}
+	var powerContent event.PowerLevelsEventContent
+	err = c.client.StateEvent(ctx, roomIDObj, event.StatePowerLevels, "", &powerContent)
+	if err == nil {
+		// Convert user IDs from mautrix format to our format
+		users := make(map[string]int)
+		for userID, level := range powerContent.Users {
+			users[string(userID)] = level
+		}
+		
+		room.PowerLevels = &PowerLevelContent{
+			Users:         users,
+			Events:        powerContent.Events,
+			EventsDefault: &powerContent.EventsDefault,
+			StateDefault:  powerContent.StateDefaultPtr,
+			UsersDefault:  &powerContent.UsersDefault,
+			Ban:           powerContent.BanPtr,
+			Kick:          powerContent.KickPtr,
+			Redact:        powerContent.RedactPtr,
+			Invite:        powerContent.InvitePtr,
 		}
 	}
 
@@ -314,7 +327,7 @@ func (c *matrixClient) UpdateRoom(ctx context.Context, roomID string, roomSpec *
 
 	// Update room topic
 	if roomSpec.Topic != "" {
-		_, err := c.client.SendStateEvent(ctx, roomIDObj, event.StateRoomTopic, "", &event.RoomTopicEventContent{
+		_, err := c.client.SendStateEvent(ctx, roomIDObj, event.StateTopic, "", &event.TopicEventContent{
 			Topic: roomSpec.Topic,
 		})
 		if err != nil {
@@ -355,16 +368,23 @@ func (c *matrixClient) SetPowerLevels(ctx context.Context, roomID string, powerL
 	}
 
 	roomIDObj := id.RoomID(roomID)
+	
+	// Convert user IDs to mautrix format
+	users := make(map[id.UserID]int)
+	for userID, level := range powerLevels.PowerLevels.Users {
+		users[id.UserID(userID)] = level
+	}
+	
 	content := &event.PowerLevelsEventContent{
-		Users:         powerLevels.PowerLevels.Users,
-		Events:        powerLevels.PowerLevels.Events,
-		EventsDefault: powerLevels.PowerLevels.EventsDefault,
-		StateDefault:  powerLevels.PowerLevels.StateDefault,
-		UsersDefault:  powerLevels.PowerLevels.UsersDefault,
-		Ban:           powerLevels.PowerLevels.Ban,
-		Kick:          powerLevels.PowerLevels.Kick,
-		Redact:        powerLevels.PowerLevels.Redact,
-		Invite:        powerLevels.PowerLevels.Invite,
+		Users:           users,
+		Events:          powerLevels.PowerLevels.Events,
+		EventsDefault:   getIntValue(powerLevels.PowerLevels.EventsDefault, 0),
+		StateDefaultPtr: powerLevels.PowerLevels.StateDefault,
+		UsersDefault:    getIntValue(powerLevels.PowerLevels.UsersDefault, 0),
+		BanPtr:          powerLevels.PowerLevels.Ban,
+		KickPtr:         powerLevels.PowerLevels.Kick,
+		RedactPtr:       powerLevels.PowerLevels.Redact,
+		InvitePtr:       powerLevels.PowerLevels.Invite,
 	}
 
 	_, err := c.client.SendStateEvent(ctx, roomIDObj, event.StatePowerLevels, "", content)
@@ -382,26 +402,29 @@ func (c *matrixClient) GetPowerLevels(ctx context.Context, roomID string) (*Powe
 	}
 
 	roomIDObj := id.RoomID(roomID)
-	powerEvent, err := c.client.StateEvent(ctx, roomIDObj, event.StatePowerLevels, "")
+	var powerContent event.PowerLevelsEventContent
+	err := c.client.StateEvent(ctx, roomIDObj, event.StatePowerLevels, "", &powerContent)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get power levels")
 	}
 
-	if powerContent, ok := powerEvent.Content.Parsed.(*event.PowerLevelsEventContent); ok {
-		return &PowerLevelContent{
-			Users:         powerContent.Users,
-			Events:        powerContent.Events,
-			EventsDefault: powerContent.EventsDefault,
-			StateDefault:  powerContent.StateDefault,
-			UsersDefault:  powerContent.UsersDefault,
-			Ban:           powerContent.Ban,
-			Kick:          powerContent.Kick,
-			Redact:        powerContent.Redact,
-			Invite:        powerContent.Invite,
-		}, nil
+	// Convert user IDs from mautrix format to our format
+	users := make(map[string]int)
+	for userID, level := range powerContent.Users {
+		users[string(userID)] = level
 	}
 
-	return nil, errors.New("invalid power levels event content")
+	return &PowerLevelContent{
+		Users:         users,
+		Events:        powerContent.Events,
+		EventsDefault: &powerContent.EventsDefault,
+		StateDefault:  powerContent.StateDefaultPtr,
+		UsersDefault:  &powerContent.UsersDefault,
+		Ban:           powerContent.BanPtr,
+		Kick:          powerContent.KickPtr,
+		Redact:        powerContent.RedactPtr,
+		Invite:        powerContent.InvitePtr,
+	}, nil
 }
 
 // Room alias operations
@@ -418,7 +441,7 @@ func (c *matrixClient) CreateRoomAlias(ctx context.Context, alias string, roomID
 	aliasID := id.RoomAlias(alias)
 	roomIDObj := id.RoomID(roomID)
 
-	err := c.client.PutRoomAlias(ctx, aliasID, roomIDObj)
+	_, err := c.client.CreateAlias(ctx, aliasID, roomIDObj)
 	if err != nil {
 		return errors.Wrap(err, "failed to create room alias")
 	}
@@ -451,7 +474,7 @@ func (c *matrixClient) DeleteRoomAlias(ctx context.Context, alias string) error 
 	}
 
 	aliasID := id.RoomAlias(alias)
-	err := c.client.DeleteRoomAlias(ctx, aliasID)
+	_, err := c.client.DeleteAlias(ctx, aliasID)
 	if err != nil {
 		return errors.Wrap(err, "failed to delete room alias")
 	}
