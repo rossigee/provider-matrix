@@ -1,0 +1,67 @@
+apiVersion: space.matrix.crossplane.io/v1alpha1
+kind: Space
+metadata:
+  name: example-space
+spec:
+  forProvider:
+    # Space name
+    name: "Example Space"
+    
+    # Space topic/description
+    topic: "This is an example Matrix space for organizing rooms"
+    
+    # Space alias (optional)
+    alias: "example-space"
+    
+    # Space visibility (public, private)
+    visibility: "private"
+    
+    # Initial users to invite
+    invite:
+      - "@alice:example.com"
+      - "@bob:example.com"
+    
+    # Space settings
+    guestAccess: "forbidden"
+    historyVisibility: "shared"
+    joinRules: "invite"
+    
+    # Space avatar (optional)
+    # avatarURL: "mxc://example.com/space_avatar"
+    
+    # Child rooms and spaces
+    children:
+      - roomID: "!example-room:example.com"
+        suggested: true
+        order: "01"
+      - roomID: "!another-room:example.com"
+        suggested: false
+        order: "02"
+    
+    # Custom power levels (optional)
+    powerLevelOverrides:
+      users:
+        "@alice:example.com": 100  # Space admin
+        "@bob:example.com": 50     # Space moderator
+      eventsDefault: 0
+      stateDefault: 50
+      usersDefault: 0
+      ban: 50
+      kick: 50
+      redact: 50
+      invite: 50
+    
+    # Initial state events (optional)
+    initialState:
+      - type: "m.room.topic"
+        stateKey: ""
+        content:
+          topic: "Welcome to our space!"
+    
+    # Creation content (optional)
+    creationContent:
+      "type": "m.space"
+      "m.federate": true
+  
+  providerConfigRef:
+    name: default
