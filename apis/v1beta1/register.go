@@ -19,6 +19,7 @@ package v1beta1
 import (
 	"reflect"
 
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"sigs.k8s.io/controller-runtime/pkg/scheme"
 )
@@ -59,6 +60,6 @@ func init() {
 }
 
 // AddToScheme adds all types of this group into the given scheme.
-func AddToScheme(s *scheme.Scheme) error {
+func AddToScheme(s *runtime.Scheme) error {
 	return SchemeBuilder.AddToScheme(s)
 }

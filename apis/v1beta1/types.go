@@ -93,6 +93,8 @@ type ProviderConfigList struct {
 	Items           []ProviderConfig `json:"items"`
 }
 
+// +kubebuilder:object:root=true
+
 // A ProviderConfigUsage indicates that a resource is using a ProviderConfig.
 type ProviderConfigUsage struct {
 	metav1.TypeMeta   `json:",inline"`
