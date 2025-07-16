@@ -1,0 +1,104 @@
+apiVersion: meta.pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-matrix
+  annotations:
+    meta.crossplane.io/maintainer: Crossplane Maintainers <info@crossplane.io>
+    meta.crossplane.io/source: github.com/crossplane-contrib/provider-matrix
+    meta.crossplane.io/license: Apache-2.0
+    meta.crossplane.io/description: |
+      The Matrix provider enables Crossplane to manage Matrix homeserver resources.
+
+    meta.crossplane.io/readme: |
+      This `provider-matrix` is a [Crossplane](https://crossplane.io/) provider that
+      enables infrastructure and application management for Matrix homeservers and related resources.
+
+      ## Available Resources
+
+      This provider supports the following Matrix resources:
+
+      * **User** - Manage Matrix users with profiles, administrative privileges, and lifecycle
+      * **Room** - Create and manage Matrix rooms with custom settings, encryption, and access controls  
+      * **Space** - Organize rooms into hierarchical spaces for better organization
+      * **PowerLevel** - Configure granular permissions and power levels within rooms
+      * **RoomAlias** - Create human-readable aliases for Matrix rooms
+
+      ## Quick Start
+
+      ### Install the Provider
+
+      Install the provider by using the following command:
+
+      ```bash
+      # Install the Matrix provider
+      kubectl apply -f examples/provider/config.yaml
+      ```
+
+      Notice that the provider will be installed in the `crossplane-system` namespace.
+
+      ### Create a ProviderConfig
+
+      Before creating any Matrix resources, you need to create a `ProviderConfig` that contains
+      the credentials for connecting to your Matrix homeserver:
+
+      ```bash
+      kubectl apply -f examples/provider/providerconfig.yaml
+      ```
+
+      ### Create Matrix Resources
+
+      Once the provider is installed and configured, you can create Matrix resources:
+
+      ```bash
+      # Create a Matrix user
+      kubectl apply -f examples/user/user.yaml
+
+      # Create a Matrix room  
+      kubectl apply -f examples/room/room.yaml
+
+      # Create a Matrix space
+      kubectl apply -f examples/space/space.yaml
+      ```
+
+      ## Configuration
+
+      The provider requires access to a Matrix homeserver with appropriate administrative privileges.
+      Configure your credentials using a Kubernetes secret:
+
+      ```yaml
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: matrix-creds
+        namespace: crossplane-system
+      type: Opaque
+      data:
+        credentials: <base64-encoded-access-token>
+      ```
+
+      The ProviderConfig should reference this secret and specify your homeserver URL:
+
+      ```yaml
+      apiVersion: matrix.crossplane.io/v1beta1
+      kind: ProviderConfig
+      metadata:
+        name: default
+      spec:
+        homeserverURL: "https://matrix.example.com"
+        adminMode: true
+        credentials:
+          source: Secret
+          secretRef:
+            namespace: crossplane-system
+            name: matrix-creds
+            key: credentials
+      ```
+
+    meta.crossplane.io/iconURI: data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMjMiIGZpbGw9IiMwREI4NjYiLz4KPHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjMyMCIgdmlld0JveD0iMCAwIDMyMCAzMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeD0iOTYiIHk9Ijk2Ij4KPGNpcmNsZSBjeD0iMTYwIiBjeT0iMTYwIiByPSIxNjAiIGZpbGw9IiNGRkZGRkYiLz4KPGNpcmNsZSBjeD0iMTYwIiBjeT0iMTYwIiByPSIxMjAiIGZpbGw9IiMwMDAwMDAiLz4KPGNpcmNsZSBjeD0iMTYwIiBjeT0iMTYwIiByPSI4MCIgZmlsbD0iI0ZGRkZGRiIvPgo8Y2lyY2xlIGN4PSIxNjAiIGN5PSIxNjAiIHI9IjQwIiBmaWxsPSIjMDAwMDAwIi8+CjwvZz4KPC9zdmc+
+
+spec:
+  crossplane:
+    version: ">=v1.14.0-0"
+  dependsOn:
+    - provider: xpkg.upbound.io/crossplane-contrib/provider-kubernetes
+      version: ">=v0.4.0"

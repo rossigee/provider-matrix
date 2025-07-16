@@ -1,0 +1,64 @@
+apiVersion: room.matrix.crossplane.io/v1alpha1
+kind: Room
+metadata:
+  name: example-room
+spec:
+  forProvider:
+    # Room name
+    name: "Example Room"
+    
+    # Room topic/description
+    topic: "This is an example Matrix room created by Crossplane"
+    
+    # Room alias (optional)
+    alias: "example-room"
+    
+    # Room preset (private_chat, public_chat, trusted_private_chat)
+    preset: "private_chat"
+    
+    # Room visibility (public, private)
+    visibility: "private"
+    
+    # Room version (optional, defaults to server default)
+    # roomVersion: "9"
+    
+    # Initial users to invite
+    invite:
+      - "@alice:example.com"
+      - "@bob:example.com"
+    
+    # Room settings
+    guestAccess: "forbidden"
+    historyVisibility: "shared"
+    joinRules: "invite"
+    encryptionEnabled: true
+    
+    # Room avatar (optional)
+    # avatarURL: "mxc://example.com/room_avatar"
+    
+    # Custom power levels (optional)
+    powerLevelOverrides:
+      users:
+        "@alice:example.com": 100  # Admin
+        "@bob:example.com": 50     # Moderator
+      eventsDefault: 0
+      stateDefault: 50
+      usersDefault: 0
+      ban: 50
+      kick: 50
+      redact: 50
+      invite: 50
+    
+    # Initial state events (optional)
+    initialState:
+      - type: "m.room.topic"
+        stateKey: ""
+        content:
+          topic: "Welcome to our example room!"
+    
+    # Creation content (optional)
+    creationContent:
+      "m.federate": true
+  
+  providerConfigRef:
+    name: default

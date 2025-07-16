@@ -1,0 +1,41 @@
+apiVersion: matrix.crossplane.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: default
+spec:
+  # Matrix homeserver URL
+  homeserverURL: "https://matrix.example.com"
+  
+  # Optional: Admin API URL (defaults to homeserverURL if not specified)
+  # adminAPIURL: "https://matrix.example.com"
+  
+  # Optional: User ID for the Matrix client
+  # userID: "@admin:example.com"
+  
+  # Optional: Device ID for the Matrix client
+  # deviceID: "CROSSPLANE_DEVICE"
+  
+  # Optional: Server type (auto, synapse, dendrite, conduit)
+  # serverType: "synapse"
+  
+  # Enable admin mode for administrative operations
+  adminMode: true
+  
+  # Credentials configuration
+  credentials:
+    source: Secret
+    secretRef:
+      namespace: crossplane-system
+      name: matrix-creds
+      key: credentials
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: matrix-creds
+  namespace: crossplane-system
+type: Opaque
+data:
+  # Replace with your base64-encoded Matrix access token
+  # To encode: echo -n "your_access_token_here" | base64
+  credentials: c2FtcGxlX2FjY2Vzc190b2tlbl9oZXJl  # sample_access_token_here

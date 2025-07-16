@@ -1,0 +1,36 @@
+apiVersion: powerlevel.matrix.crossplane.io/v1alpha1
+kind: PowerLevel
+metadata:
+  name: example-powerlevel
+spec:
+  forProvider:
+    # Room ID to manage power levels for
+    roomID: "!example-room:example.com"
+    
+    # User-specific power levels
+    users:
+      "@alice:example.com": 100    # Room administrator
+      "@bob:example.com": 50       # Moderator
+      "@charlie:example.com": 0    # Regular user
+    
+    # Event-specific power levels
+    events:
+      "m.room.name": 50           # Moderators can change room name
+      "m.room.topic": 50          # Moderators can change room topic
+      "m.room.avatar": 50         # Moderators can change room avatar
+      "m.room.canonical_alias": 100  # Only admins can set canonical alias
+      "m.room.encryption": 100    # Only admins can enable encryption
+    
+    # Default power levels
+    eventsDefault: 0      # Default power level to send events
+    stateDefault: 50      # Default power level to send state events
+    usersDefault: 0       # Default power level for new users
+    
+    # Action power levels
+    ban: 50               # Power level required to ban users
+    kick: 50              # Power level required to kick users
+    redact: 50            # Power level required to redact messages
+    invite: 50            # Power level required to invite users
+  
+  providerConfigRef:
+    name: default

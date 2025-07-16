@@ -1,0 +1,38 @@
+apiVersion: user.matrix.crossplane.io/v1alpha1
+kind: User
+metadata:
+  name: example-user
+spec:
+  forProvider:
+    # Matrix user ID (localpart@domain or full @localpart:domain)
+    userID: "@alice:example.com"
+    
+    # Alternative: specify just the localpart and let the homeserver add the domain
+    # localpart: "alice"
+    
+    # User password (optional - can be set later)
+    password: "secure_password_here"
+    
+    # Display name
+    displayName: "Alice Wonderland"
+    
+    # Avatar URL (mxc:// URL)
+    # avatarURL: "mxc://example.com/avatar123"
+    
+    # Administrative privileges
+    admin: false
+    
+    # User type (optional: regular, guest, bot)
+    userType: "regular"
+    
+    # External identities (optional)
+    externalIDs:
+      - medium: "email"
+        address: "alice@example.com"
+        validated: true
+    
+    # Account expiration (optional)
+    # expireTime: "2024-12-31T23:59:59Z"
+  
+  providerConfigRef:
+    name: default

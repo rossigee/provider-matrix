@@ -1,0 +1,22 @@
+apiVersion: roomalias.matrix.crossplane.io/v1alpha1
+kind: RoomAlias
+metadata:
+  name: example-roomalias
+spec:
+  forProvider:
+    # Room alias to create
+    alias: "#example-room:example.com"
+    
+    # Room ID that this alias should point to
+    roomID: "!abc123:example.com"
+    
+    # Set as canonical alias for the room
+    setAsCanonical: true
+    
+    # Alternative aliases to publish (optional)
+    altAliases:
+      - "#example:example.com"
+      - "#sample-room:example.com"
+  
+  providerConfigRef:
+    name: default
