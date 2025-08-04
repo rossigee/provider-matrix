@@ -62,6 +62,12 @@ type Client interface {
 	CreateRoomAlias(ctx context.Context, alias string, roomID string) error
 	GetRoomAlias(ctx context.Context, alias string) (*RoomAlias, error)
 	DeleteRoomAlias(ctx context.Context, alias string) error
+
+	// Admin operations
+	ListUsers(ctx context.Context, from string, limit int) (*ListUsersResponse, error)
+	ListRooms(ctx context.Context, from string, limit int) (*ListRoomsResponse, error)
+	MakeRoomAdmin(ctx context.Context, roomID, userID string) error
+	BlockRoom(ctx context.Context, roomID string, block bool) error
 }
 
 // Config holds the configuration for the Matrix client
@@ -218,6 +224,23 @@ func IsNotFound(err error) bool {
 	return false
 }
 
+// Admin operations - delegate to adminClient
+func (c *matrixClient) ListUsers(ctx context.Context, from string, limit int) (*ListUsersResponse, error) {
+	return c.adminClient.listUsers(ctx, from, limit)
+}
+
+func (c *matrixClient) ListRooms(ctx context.Context, from string, limit int) (*ListRoomsResponse, error) {
+	return c.adminClient.listRooms(ctx, from, limit)
+}
+
+func (c *matrixClient) MakeRoomAdmin(ctx context.Context, roomID, userID string) error {
+	return c.adminClient.makeRoomAdmin(ctx, roomID, userID)
+}
+
+func (c *matrixClient) BlockRoom(ctx context.Context, roomID string, block bool) error {
+	return c.adminClient.blockRoom(ctx, roomID, block)
+}
+
 // Helper method to validate Matrix IDs
 func validateMatrixID(matrixID, idType string) error {
 	switch idType {
@@ -227,7 +250,7 @@ func validateMatrixID(matrixID, idType string) error {
 		}
 	case "room":
 		if !strings.HasPrefix(matrixID, "!") {
-			return fmt.Errorf("room ID must start with !")
+			return fmt.Errorf("room ID must start with exclamation mark")
 		}
 	case "alias":
 		if !strings.HasPrefix(matrixID, "#") {
