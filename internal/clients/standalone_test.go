@@ -38,12 +38,12 @@ func validateMatrixID(matrixID, idType string) error {
 			return fmt.Errorf("room alias must start with #")
 		}
 	}
-	
+
 	parts := strings.Split(matrixID[1:], ":")
 	if len(parts) != 2 {
 		return fmt.Errorf("invalid Matrix ID format: %s", matrixID)
 	}
-	
+
 	return nil
 }
 
@@ -98,7 +98,7 @@ func TestValidateMatrixID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := validateMatrixID(tt.matrixID, tt.idType)
-			
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("validateMatrixID() error = %v, wantErr %v", err, tt.wantErr)
 			}

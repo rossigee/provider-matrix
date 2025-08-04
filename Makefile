@@ -32,9 +32,8 @@ PLATFORMS ?= linux_amd64 linux_arm64
 NPROCS ?= 1
 
 # each of our test suites have been getting faster as we iterate on them, but in order
-# to still have them run in a reasonable amount of time, we need to set the timeout
-# to be a bit higher than the default.
-GOLANGCILINT_VERSION = 1.54.2
+# Override golangci-lint version for modern Go support
+GOLANGCILINT_VERSION ?= 2.3.1
 GO_TEST_PARALLEL := $(shell echo $$(( $(NPROCS) / 2 )))
 GO_STATIC_PACKAGES = $(GO_PROJECT)/cmd/provider $(GO_PROJECT)/cmd/generator
 GO_LDFLAGS += -X $(GO_PROJECT)/internal/version.Version=$(VERSION)
@@ -58,12 +57,15 @@ IMAGES = $(PROJECT_NAME)
 -include build/makelib/imagelight.mk
 
 # ====================================================================================
-# Setup XPKG
+# Setup XPKG - Standardized registry configuration
 
-XPKG_REG_ORGS ?= xpkg.upbound.io/crossplane-contrib
-# NOTE(hasheddan): skip promoting on xpkg.upbound.io as channel tags are
-# inferred.
-XPKG_REG_ORGS_NO_PROMOTE ?= xpkg.upbound.io/crossplane-contrib
+# Primary registry: GitHub Container Registry under rossigee
+XPKG_REG_ORGS ?= ghcr.io/rossigee
+XPKG_REG_ORGS_NO_PROMOTE ?= ghcr.io/rossigee
+
+# Optional registries (can be enabled via environment variables)
+# To enable Harbor: export ENABLE_HARBOR_PUBLISH=true make publish XPKG_REG_ORGS=harbor.golder.lan/library
+# To enable Upbound: export ENABLE_UPBOUND_PUBLISH=true make publish XPKG_REG_ORGS=xpkg.upbound.io/crossplane-contrib
 XPKGS = $(PROJECT_NAME)
 -include build/makelib/xpkg.mk
 

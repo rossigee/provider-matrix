@@ -41,13 +41,13 @@ import (
 )
 
 const (
-	errNotPowerLevel    = "managed resource is not a PowerLevel custom resource"
-	errTrackPCUsage     = "cannot track ProviderConfig usage"
-	errGetPC            = "cannot get ProviderConfig"
-	errGetCreds         = "cannot get credentials"
-	errNewClient        = "cannot create new Matrix client"
-	errSetPowerLevels   = "cannot set Matrix power levels"
-	errGetPowerLevels   = "cannot get Matrix power levels"
+	errNotPowerLevel  = "managed resource is not a PowerLevel custom resource"
+	errTrackPCUsage   = "cannot track ProviderConfig usage"
+	errGetPC          = "cannot get ProviderConfig"
+	errGetCreds       = "cannot get credentials"
+	errNewClient      = "cannot create new Matrix client"
+	errSetPowerLevels = "cannot set Matrix power levels"
+	errGetPowerLevels = "cannot get Matrix power levels"
 )
 
 // Setup adds a controller that reconciles PowerLevel managed resources.
@@ -233,9 +233,9 @@ func generatePowerLevelSpec(cr *v1alpha1.PowerLevel) *clients.PowerLevelSpec {
 
 func generatePowerLevelObservation(roomID string, powerLevels *clients.PowerLevelContent) v1alpha1.PowerLevelObservation {
 	obs := v1alpha1.PowerLevelObservation{
-		RoomID: roomID,
-		Users:  powerLevels.Users,
-		Events: powerLevels.Events,
+		RoomID:       roomID,
+		Users:        powerLevels.Users,
+		Events:       powerLevels.Events,
 		LastModified: &metav1.Time{Time: time.Now()},
 	}
 
