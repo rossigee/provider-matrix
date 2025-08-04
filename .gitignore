@@ -63,4 +63,4 @@ kubeconfig
 
 # Test results
 test-results.xml
-junit.xml
+junit.xml/.cache/
