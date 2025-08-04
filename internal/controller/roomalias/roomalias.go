@@ -41,14 +41,14 @@ import (
 )
 
 const (
-	errNotRoomAlias     = "managed resource is not a RoomAlias custom resource"
-	errTrackPCUsage     = "cannot track ProviderConfig usage"
-	errGetPC            = "cannot get ProviderConfig"
-	errGetCreds         = "cannot get credentials"
-	errNewClient        = "cannot create new Matrix client"
-	errCreateRoomAlias  = "cannot create Matrix room alias"
-	errGetRoomAlias     = "cannot get Matrix room alias"
-	errDeleteRoomAlias  = "cannot delete Matrix room alias"
+	errNotRoomAlias    = "managed resource is not a RoomAlias custom resource"
+	errTrackPCUsage    = "cannot track ProviderConfig usage"
+	errGetPC           = "cannot get ProviderConfig"
+	errGetCreds        = "cannot get credentials"
+	errNewClient       = "cannot create new Matrix client"
+	errCreateRoomAlias = "cannot create Matrix room alias"
+	errGetRoomAlias    = "cannot get Matrix room alias"
+	errDeleteRoomAlias = "cannot delete Matrix room alias"
 )
 
 // Setup adds a controller that reconciles RoomAlias managed resources.

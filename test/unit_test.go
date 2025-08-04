@@ -65,12 +65,12 @@ func TestMatrixIDValidation(t *testing.T) {
 			if len(id) < 3 {
 				t.Errorf("ID too short: %s", id)
 			}
-			
+
 			prefix := id[0]
 			if prefix != '@' && prefix != '!' && prefix != '#' {
 				t.Errorf("Invalid prefix for ID: %s", id)
 			}
-			
+
 			colonIndex := -1
 			for i, ch := range id {
 				if ch == ':' {
@@ -78,7 +78,7 @@ func TestMatrixIDValidation(t *testing.T) {
 					break
 				}
 			}
-			
+
 			if colonIndex == -1 {
 				t.Errorf("No colon found in ID: %s", id)
 			}
@@ -89,7 +89,7 @@ func TestMatrixIDValidation(t *testing.T) {
 // BenchmarkMatrixIDParsing benchmarks ID parsing performance
 func BenchmarkMatrixIDParsing(b *testing.B) {
 	testID := "@alice:example.com"
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		// Simulate parsing

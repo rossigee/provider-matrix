@@ -41,15 +41,15 @@ import (
 )
 
 const (
-	errNotRoom       = "managed resource is not a Room custom resource"
-	errTrackPCUsage  = "cannot track ProviderConfig usage"
-	errGetPC         = "cannot get ProviderConfig"
-	errGetCreds      = "cannot get credentials"
-	errNewClient     = "cannot create new Matrix client"
-	errCreateRoom    = "cannot create Matrix room"
-	errGetRoom       = "cannot get Matrix room"
-	errUpdateRoom    = "cannot update Matrix room"
-	errDeleteRoom    = "cannot delete Matrix room"
+	errNotRoom      = "managed resource is not a Room custom resource"
+	errTrackPCUsage = "cannot track ProviderConfig usage"
+	errGetPC        = "cannot get ProviderConfig"
+	errGetCreds     = "cannot get credentials"
+	errNewClient    = "cannot create new Matrix client"
+	errCreateRoom   = "cannot create Matrix room"
+	errGetRoom      = "cannot get Matrix room"
+	errUpdateRoom   = "cannot update Matrix room"
+	errDeleteRoom   = "cannot delete Matrix room"
 )
 
 // Setup adds a controller that reconciles Room managed resources.

@@ -22,30 +22,30 @@ import (
 
 // User represents a Matrix user
 type User struct {
-	UserID       string            `json:"user_id"`
-	DisplayName  string            `json:"displayname,omitempty"`
-	AvatarURL    string            `json:"avatar_url,omitempty"`
-	Admin        bool              `json:"admin"`
-	Deactivated  bool              `json:"deactivated"`
-	CreationTime *time.Time        `json:"creation_ts,omitempty"`
-	LastSeenTime *time.Time        `json:"last_seen_ts,omitempty"`
-	UserType     string            `json:"user_type,omitempty"`
-	ExternalIDs  []ExternalID      `json:"external_ids,omitempty"`
-	Devices      []Device          `json:"devices,omitempty"`
+	UserID       string       `json:"user_id"`
+	DisplayName  string       `json:"displayname,omitempty"`
+	AvatarURL    string       `json:"avatar_url,omitempty"`
+	Admin        bool         `json:"admin"`
+	Deactivated  bool         `json:"deactivated"`
+	CreationTime *time.Time   `json:"creation_ts,omitempty"`
+	LastSeenTime *time.Time   `json:"last_seen_ts,omitempty"`
+	UserType     string       `json:"user_type,omitempty"`
+	ExternalIDs  []ExternalID `json:"external_ids,omitempty"`
+	Devices      []Device     `json:"devices,omitempty"`
 }
 
 // UserSpec represents the parameters for creating/updating a user
 type UserSpec struct {
-	UserID      string        `json:"user_id,omitempty"`
-	Localpart   string        `json:"localpart,omitempty"`
-	Password    string        `json:"password,omitempty"`
-	DisplayName string        `json:"displayname,omitempty"`
-	AvatarURL   string        `json:"avatar_url,omitempty"`
-	Admin       bool          `json:"admin"`
-	Deactivated bool          `json:"deactivated"`
-	UserType    string        `json:"user_type,omitempty"`
-	ExternalIDs []ExternalID  `json:"external_ids,omitempty"`
-	ExpireTime  *time.Time    `json:"expire_time,omitempty"`
+	UserID      string       `json:"user_id,omitempty"`
+	Localpart   string       `json:"localpart,omitempty"`
+	Password    string       `json:"password,omitempty"`
+	DisplayName string       `json:"displayname,omitempty"`
+	AvatarURL   string       `json:"avatar_url,omitempty"`
+	Admin       bool         `json:"admin"`
+	Deactivated bool         `json:"deactivated"`
+	UserType    string       `json:"user_type,omitempty"`
+	ExternalIDs []ExternalID `json:"external_ids,omitempty"`
+	ExpireTime  *time.Time   `json:"expire_time,omitempty"`
 }
 
 // ExternalID represents a third-party identifier
@@ -65,23 +65,23 @@ type Device struct {
 
 // Room represents a Matrix room
 type Room struct {
-	RoomID            string              `json:"room_id"`
-	Name              string              `json:"name,omitempty"`
-	Topic             string              `json:"topic,omitempty"`
-	Alias             string              `json:"canonical_alias,omitempty"`
-	AvatarURL         string              `json:"avatar,omitempty"`
-	Creator           string              `json:"creator,omitempty"`
-	CreationTime      *time.Time          `json:"creation_ts,omitempty"`
-	RoomVersion       string              `json:"room_version,omitempty"`
-	JoinedMembers     int                 `json:"joined_members"`
-	InvitedMembers    int                 `json:"invited_members"`
-	Visibility        string              `json:"visibility,omitempty"`
-	GuestAccess       string              `json:"guest_access,omitempty"`
-	HistoryVisibility string              `json:"history_visibility,omitempty"`
-	JoinRules         string              `json:"join_rules,omitempty"`
-	EncryptionEnabled bool                `json:"encryption,omitempty"`
-	PowerLevels       *PowerLevelContent  `json:"power_levels,omitempty"`
-	State             []StateEvent        `json:"state,omitempty"`
+	RoomID            string             `json:"room_id"`
+	Name              string             `json:"name,omitempty"`
+	Topic             string             `json:"topic,omitempty"`
+	Alias             string             `json:"canonical_alias,omitempty"`
+	AvatarURL         string             `json:"avatar,omitempty"`
+	Creator           string             `json:"creator,omitempty"`
+	CreationTime      *time.Time         `json:"creation_ts,omitempty"`
+	RoomVersion       string             `json:"room_version,omitempty"`
+	JoinedMembers     int                `json:"joined_members"`
+	InvitedMembers    int                `json:"invited_members"`
+	Visibility        string             `json:"visibility,omitempty"`
+	GuestAccess       string             `json:"guest_access,omitempty"`
+	HistoryVisibility string             `json:"history_visibility,omitempty"`
+	JoinRules         string             `json:"join_rules,omitempty"`
+	EncryptionEnabled bool               `json:"encryption,omitempty"`
+	PowerLevels       *PowerLevelContent `json:"power_levels,omitempty"`
+	State             []StateEvent       `json:"state,omitempty"`
 }
 
 // RoomSpec represents the parameters for creating/updating a room
@@ -125,8 +125,8 @@ type PowerLevelContent struct {
 
 // PowerLevelSpec represents the parameters for setting power levels
 type PowerLevelSpec struct {
-	RoomID       string             `json:"room_id"`
-	PowerLevels  *PowerLevelContent `json:"power_levels"`
+	RoomID      string             `json:"room_id"`
+	PowerLevels *PowerLevelContent `json:"power_levels"`
 }
 
 // RoomAlias represents a Matrix room alias
@@ -137,22 +137,22 @@ type RoomAlias struct {
 
 // Space represents a Matrix space (special type of room)
 type Space struct {
-	Room          // Embedded room fields
-	SpaceType     string      `json:"type"`          // Should be "m.space"
-	Children      []SpaceChild `json:"children,omitempty"`
+	Room                   // Embedded room fields
+	SpaceType string       `json:"type"` // Should be "m.space"
+	Children  []SpaceChild `json:"children,omitempty"`
 }
 
 // SpaceChild represents a child room or space within a space
 type SpaceChild struct {
-	RoomID      string   `json:"room_id"`
-	Via         []string `json:"via,omitempty"`
-	Order       string   `json:"order,omitempty"`
-	Suggested   bool     `json:"suggested,omitempty"`
+	RoomID    string   `json:"room_id"`
+	Via       []string `json:"via,omitempty"`
+	Order     string   `json:"order,omitempty"`
+	Suggested bool     `json:"suggested,omitempty"`
 }
 
 // SpaceSpec represents the parameters for creating/updating a space
 type SpaceSpec struct {
-	RoomSpec          // Embedded room spec fields
+	RoomSpec              // Embedded room spec fields
 	Children []SpaceChild `json:"children,omitempty"`
 }
 
@@ -164,10 +164,10 @@ type AdminResponse struct {
 
 // ListUsersResponse represents the response from listing users
 type ListUsersResponse struct {
-	Users      []User `json:"users"`
-	Total      int    `json:"total"`
-	NextToken  string `json:"next_token,omitempty"`
-	PrevToken  string `json:"prev_token,omitempty"`
+	Users     []User `json:"users"`
+	Total     int    `json:"total"`
+	NextToken string `json:"next_token,omitempty"`
+	PrevToken string `json:"prev_token,omitempty"`
 }
 
 // ListRoomsResponse represents the response from listing rooms

@@ -41,14 +41,14 @@ import (
 )
 
 const (
-	errNotUser       = "managed resource is not a User custom resource"
-	errTrackPCUsage  = "cannot track ProviderConfig usage"
-	errGetPC         = "cannot get ProviderConfig"
-	errGetCreds      = "cannot get credentials"
-	errNewClient     = "cannot create new Matrix client"
-	errCreateUser    = "cannot create Matrix user"
-	errGetUser       = "cannot get Matrix user"
-	errUpdateUser    = "cannot update Matrix user"
+	errNotUser        = "managed resource is not a User custom resource"
+	errTrackPCUsage   = "cannot track ProviderConfig usage"
+	errGetPC          = "cannot get ProviderConfig"
+	errGetCreds       = "cannot get credentials"
+	errNewClient      = "cannot create new Matrix client"
+	errCreateUser     = "cannot create Matrix user"
+	errGetUser        = "cannot get Matrix user"
+	errUpdateUser     = "cannot update Matrix user"
 	errDeactivateUser = "cannot deactivate Matrix user"
 )
 

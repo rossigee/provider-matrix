@@ -62,7 +62,7 @@ func TestNewClient(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			client, err := NewClient(tt.config)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 				assert.Nil(t, client)
@@ -134,7 +134,7 @@ func TestValidateMatrixID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := validateMatrixID(tt.matrixID, tt.idType)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

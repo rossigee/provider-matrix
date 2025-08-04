@@ -80,7 +80,7 @@ func TestValidateMatrixIDUtil(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := validateMatrixID(tt.matrixID, tt.idType)
-			
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("validateMatrixID() error = %v, wantErr %v", err, tt.wantErr)
 			}

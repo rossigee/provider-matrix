@@ -32,7 +32,7 @@ func TestProviderMatrixComponents(t *testing.T) {
 			component: "internal/clients",
 			features: []string{
 				"User management",
-				"Room operations", 
+				"Room operations",
 				"Power level control",
 				"Room alias management",
 				"Admin API support",
@@ -224,7 +224,7 @@ func TestProjectStructure(t *testing.T) {
 	for _, file := range expectedFiles {
 		t.Logf("  ✓ %s", file)
 	}
-	
+
 	t.Logf("\nTotal files in project: 49")
 	t.Logf("Total lines of code: 6,633+")
 }

@@ -19,10 +19,10 @@ package clients
 import (
 	"context"
 
+	"github.com/pkg/errors"
 	"maunium.net/go/mautrix"
 	"maunium.net/go/mautrix/event"
 	"maunium.net/go/mautrix/id"
-	"github.com/pkg/errors"
 )
 
 // getIntValue returns the value of an int pointer or a default value
@@ -125,14 +125,14 @@ func (c *matrixClient) DeactivateUser(ctx context.Context, userID string) error 
 func (c *matrixClient) CreateRoom(ctx context.Context, roomSpec *RoomSpec) (*Room, error) {
 	// Build mautrix room creation request
 	req := &mautrix.ReqCreateRoom{
-		Name:         roomSpec.Name,
-		Topic:        roomSpec.Topic,
-		RoomAliasName: roomSpec.Alias,
-		Preset:       roomSpec.Preset,
-		Visibility:   roomSpec.Visibility,
-		RoomVersion:  roomSpec.RoomVersion,
+		Name:            roomSpec.Name,
+		Topic:           roomSpec.Topic,
+		RoomAliasName:   roomSpec.Alias,
+		Preset:          roomSpec.Preset,
+		Visibility:      roomSpec.Visibility,
+		RoomVersion:     roomSpec.RoomVersion,
 		CreationContent: roomSpec.CreationContent,
-		Invite:       make([]id.UserID, len(roomSpec.Invite)),
+		Invite:          make([]id.UserID, len(roomSpec.Invite)),
 	}
 
 	// Convert invite list
@@ -156,7 +156,7 @@ func (c *matrixClient) CreateRoom(ctx context.Context, roomSpec *RoomSpec) (*Roo
 		for userID, level := range roomSpec.PowerLevelOverrides.Users {
 			userLevels[id.UserID(userID)] = level
 		}
-		
+
 		req.PowerLevelOverride = &event.PowerLevelsEventContent{
 			Users:           userLevels,
 			Events:          roomSpec.PowerLevelOverrides.Events,
@@ -178,7 +178,7 @@ func (c *matrixClient) CreateRoom(ctx context.Context, roomSpec *RoomSpec) (*Roo
 
 	// Set additional room state if needed
 	roomID := resp.RoomID.String()
-	
+
 	if roomSpec.GuestAccess != "" {
 		_, err = c.client.SendStateEvent(ctx, resp.RoomID, event.StateGuestAccess, "", &event.GuestAccessEventContent{
 			GuestAccess: event.GuestAccess(roomSpec.GuestAccess),
@@ -290,7 +290,7 @@ func (c *matrixClient) GetRoom(ctx context.Context, roomID string) (*Room, error
 		for userID, level := range powerContent.Users {
 			users[string(userID)] = level
 		}
-		
+
 		room.PowerLevels = &PowerLevelContent{
 			Users:         users,
 			Events:        powerContent.Events,
@@ -368,13 +368,13 @@ func (c *matrixClient) SetPowerLevels(ctx context.Context, roomID string, powerL
 	}
 
 	roomIDObj := id.RoomID(roomID)
-	
+
 	// Convert user IDs to mautrix format
 	users := make(map[id.UserID]int)
 	for userID, level := range powerLevels.PowerLevels.Users {
 		users[id.UserID(userID)] = level
 	}
-	
+
 	content := &event.PowerLevelsEventContent{
 		Users:           users,
 		Events:          powerLevels.PowerLevels.Events,

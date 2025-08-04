@@ -33,8 +33,8 @@ import (
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 
 	"github.com/crossplane-contrib/provider-matrix/apis"
-	userv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/user/v1alpha1"
 	roomv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/room/v1alpha1"
+	userv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/user/v1alpha1"
 	"github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
 )
 
@@ -50,7 +50,7 @@ func TestIntegrationSuite(t *testing.T) {
 	if os.Getenv("MATRIX_ACCESS_TOKEN") == "" {
 		t.Skip("Skipping integration tests - MATRIX_ACCESS_TOKEN not set")
 	}
-	
+
 	suite.Run(t, new(IntegrationTestSuite))
 }
 
@@ -59,7 +59,7 @@ func (suite *IntegrationTestSuite) SetupSuite() {
 	scheme := runtime.NewScheme()
 	err := apis.AddToScheme(scheme)
 	require.NoError(suite.T(), err)
-	
+
 	// Create fake client for testing
 	suite.client = fake.NewClientBuilder().
 		WithScheme(scheme).
@@ -69,7 +69,7 @@ func (suite *IntegrationTestSuite) SetupSuite() {
 
 func (suite *IntegrationTestSuite) TestProviderConfig() {
 	ctx := context.Background()
-	
+
 	// Create a ProviderConfig
 	pc := &v1beta1.ProviderConfig{
 		ObjectMeta: metav1.ObjectMeta{
@@ -77,7 +77,7 @@ func (suite *IntegrationTestSuite) TestProviderConfig() {
 		},
 		Spec: v1beta1.ProviderConfigSpec{
 			HomeserverURL: "https://matrix.example.com",
-			AdminMode:    boolPtr(true),
+			AdminMode:     boolPtr(true),
 			Credentials: v1beta1.ProviderCredentials{
 				Source: xpv1.CredentialsSourceSecret,
 				CommonCredentialSelectors: xpv1.CommonCredentialSelectors{
@@ -92,10 +92,10 @@ func (suite *IntegrationTestSuite) TestProviderConfig() {
 			},
 		},
 	}
-	
+
 	err := suite.client.Create(ctx, pc)
 	assert.NoError(suite.T(), err)
-	
+
 	// Verify it was created
 	retrieved := &v1beta1.ProviderConfig{}
 	err = suite.client.Get(ctx, client.ObjectKey{Name: "test-config"}, retrieved)
@@ -105,7 +105,7 @@ func (suite *IntegrationTestSuite) TestProviderConfig() {
 
 func (suite *IntegrationTestSuite) TestUserResource() {
 	ctx := context.Background()
-	
+
 	// Create a User resource
 	user := &userv1alpha1.User{
 		ObjectMeta: metav1.ObjectMeta{
@@ -124,10 +124,10 @@ func (suite *IntegrationTestSuite) TestUserResource() {
 			},
 		},
 	}
-	
+
 	err := suite.client.Create(ctx, user)
 	assert.NoError(suite.T(), err)
-	
+
 	// Verify it was created
 	retrieved := &userv1alpha1.User{}
 	err = suite.client.Get(ctx, client.ObjectKey{Name: "test-user"}, retrieved)
@@ -138,7 +138,7 @@ func (suite *IntegrationTestSuite) TestUserResource() {
 
 func (suite *IntegrationTestSuite) TestRoomResource() {
 	ctx := context.Background()
-	
+
 	// Create a Room resource
 	room := &roomv1alpha1.Room{
 		ObjectMeta: metav1.ObjectMeta{
@@ -162,10 +162,10 @@ func (suite *IntegrationTestSuite) TestRoomResource() {
 			},
 		},
 	}
-	
+
 	err := suite.client.Create(ctx, room)
 	assert.NoError(suite.T(), err)
-	
+
 	// Verify it was created
 	retrieved := &roomv1alpha1.Room{}
 	err = suite.client.Get(ctx, client.ObjectKey{Name: "test-room"}, retrieved)
@@ -177,7 +177,7 @@ func (suite *IntegrationTestSuite) TestRoomResource() {
 
 func (suite *IntegrationTestSuite) TestResourceLifecycle() {
 	ctx := context.Background()
-	
+
 	// Test creating, updating, and deleting resources
 	user := &userv1alpha1.User{
 		ObjectMeta: metav1.ObjectMeta{
@@ -195,22 +195,22 @@ func (suite *IntegrationTestSuite) TestResourceLifecycle() {
 			},
 		},
 	}
-	
+
 	// Create
 	err := suite.client.Create(ctx, user)
 	assert.NoError(suite.T(), err)
-	
+
 	// Update
 	user.Spec.ForProvider.DisplayName = stringPtr("Updated Lifecycle User")
 	err = suite.client.Update(ctx, user)
 	assert.NoError(suite.T(), err)
-	
+
 	// Verify update
 	retrieved := &userv1alpha1.User{}
 	err = suite.client.Get(ctx, client.ObjectKey{Name: "lifecycle-user"}, retrieved)
 	assert.NoError(suite.T(), err)
 	assert.Equal(suite.T(), "Updated Lifecycle User", *retrieved.Spec.ForProvider.DisplayName)
-	
+
 	// Delete
 	err = suite.client.Delete(ctx, user)
 	assert.NoError(suite.T(), err)
@@ -221,13 +221,13 @@ func BenchmarkUserCreation(b *testing.B) {
 	scheme := runtime.NewScheme()
 	err := apis.AddToScheme(scheme)
 	require.NoError(b, err)
-	
+
 	client := fake.NewClientBuilder().
 		WithScheme(scheme).
 		Build()
-	
+
 	ctx := context.Background()
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		user := &userv1alpha1.User{
@@ -246,7 +246,7 @@ func BenchmarkUserCreation(b *testing.B) {
 				},
 			},
 		}
-		
+
 		err := client.Create(ctx, user)
 		require.NoError(b, err)
 	}

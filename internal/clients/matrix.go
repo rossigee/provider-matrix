@@ -23,10 +23,10 @@ import (
 	"strings"
 	"time"
 
-	"maunium.net/go/mautrix"
-	"maunium.net/go/mautrix/id"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
+	"maunium.net/go/mautrix"
+	"maunium.net/go/mautrix/id"
 
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -188,17 +188,17 @@ func IsNotFound(err error) bool {
 	if err == nil {
 		return false
 	}
-	
+
 	// Check for Matrix-specific not found errors
 	if mautrixErr, ok := err.(mautrix.HTTPError); ok {
 		return mautrixErr.RespError != nil && mautrixErr.RespError.ErrCode == "M_NOT_FOUND"
 	}
-	
+
 	// Check for HTTP 404
 	if strings.Contains(err.Error(), "404") || strings.Contains(strings.ToLower(err.Error()), "not found") {
 		return true
 	}
-	
+
 	return false
 }
 
@@ -218,12 +218,12 @@ func validateMatrixID(matrixID, idType string) error {
 			return fmt.Errorf("room alias must start with #")
 		}
 	}
-	
+
 	parts := strings.Split(matrixID[1:], ":")
 	if len(parts) != 2 {
 		return fmt.Errorf("invalid Matrix ID format: %s", matrixID)
 	}
-	
+
 	return nil
 }
 
