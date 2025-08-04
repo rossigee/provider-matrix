@@ -81,7 +81,12 @@ func (c *adminClient) makeRequest(ctx context.Context, method, path string, body
 
 // handleResponse processes the HTTP response
 func (c *adminClient) handleResponse(resp *http.Response, target interface{}) error {
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			// Log error but don't return it as it's from cleanup
+			_ = err // Explicitly ignore cleanup error
+		}
+	}()
 
 	if resp.StatusCode >= 400 {
 		body, _ := io.ReadAll(resp.Body)
