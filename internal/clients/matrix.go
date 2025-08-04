@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -84,6 +85,21 @@ type matrixClient struct {
 
 // NewClient creates a new Matrix client
 func NewClient(config *Config) (Client, error) {
+	// Validate homeserver URL
+	parsedURL, err := url.Parse(config.HomeserverURL)
+	if err != nil {
+		return nil, errors.Wrap(err, "invalid homeserver URL")
+	}
+
+	// Check that it's a valid HTTP/HTTPS URL
+	if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
+		return nil, errors.New("homeserver URL must use http or https scheme")
+	}
+
+	if parsedURL.Host == "" {
+		return nil, errors.New("homeserver URL must have a valid host")
+	}
+
 	if config.HTTPClient == nil {
 		config.HTTPClient = &http.Client{
 			Timeout: defaultTimeout,
