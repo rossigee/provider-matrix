@@ -2,8 +2,6 @@ module github.com/crossplane-contrib/provider-matrix
 
 go 1.24.5
 
-toolchain go1.24.5
-
 require (
 	github.com/crossplane/crossplane-runtime v1.15.0
 	github.com/pkg/errors v0.9.1
