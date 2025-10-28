@@ -26,9 +26,11 @@ import (
 
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"maunium.net/go/mautrix"
 	"maunium.net/go/mautrix/id"
 
+	"github.com/crossplane/crossplane-runtime/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -153,11 +155,10 @@ func UseProviderConfig(ctx context.Context, c client.Client, mg resource.Managed
 		return nil, errors.Wrap(err, "cannot get referenced ProviderConfig")
 	}
 
-	// TODO: Fix ProviderConfigUsage tracking with newer crossplane-runtime
-	// t := resource.NewProviderConfigUsageTracker(c, &v1beta1.ProviderConfigUsage{})
-	// if err := t.Track(ctx, mg); err != nil {
-	// 	return nil, errors.Wrap(err, "cannot track ProviderConfig usage")
-	// }
+	t := newProviderConfigUsageTracker(c)
+	if err := t.Track(ctx, mg); err != nil {
+		return nil, errors.Wrap(err, "cannot track ProviderConfig usage")
+	}
 
 	credBytes, err := resource.CommonCredentialExtractor(ctx, pc.Spec.Credentials.Source, c, pc.Spec.Credentials.CommonCredentialSelectors)
 	if err != nil {
@@ -273,4 +274,44 @@ func extractDomain(matrixID string) string {
 		return parts[1]
 	}
 	return ""
+}
+
+// providerConfigUsageTracker is a custom tracker that ensures ProviderConfigUsage
+// resources are created in the correct namespace and works with fake clients in tests.
+type providerConfigUsageTracker struct {
+	kube client.Client
+}
+
+func newProviderConfigUsageTracker(kube client.Client) resource.Tracker {
+	return &providerConfigUsageTracker{kube: kube}
+}
+
+func (t *providerConfigUsageTracker) Track(ctx context.Context, mg resource.Managed) error {
+	// Create ProviderConfigUsage - namespaced resource per CRD definition
+	pcu := &v1beta1.ProviderConfigUsage{}
+	pcu.SetName(string(mg.GetUID()))
+	// Set namespace to crossplane-system if managed resource has no namespace (cluster-scoped)
+	// Otherwise use the managed resource namespace
+	namespace := mg.GetNamespace()
+	if namespace == "" {
+		namespace = "crossplane-system"
+	}
+	pcu.SetNamespace(namespace)
+	pcu.SetOwnerReferences([]metav1.OwnerReference{meta.AsOwner(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))})
+
+	pcRef := mg.GetProviderConfigReference()
+	if pcRef != nil {
+		pcu.ProviderConfigReference = *pcRef
+	}
+
+	resRef := meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind())
+	if resRef != nil {
+		pcu.ResourceReference = *resRef
+	}
+
+	err := t.kube.Create(ctx, pcu)
+	if err != nil && client.IgnoreAlreadyExists(err) != nil {
+		return err
+	}
+	return nil
 }

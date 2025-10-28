@@ -18,7 +18,6 @@ package user
 
 import (
 	"context"
-	"time"
 
 	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -30,6 +29,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/connection"
 	"github.com/crossplane/crossplane-runtime/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/pkg/event"
+	"github.com/crossplane/crossplane-runtime/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
@@ -54,11 +54,11 @@ const (
 
 // Setup adds a controller that reconciles User managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(v1alpha1.UserGroupKind)
+	name := managed.ControllerName(v1alpha1.UserKind)
 
 	cps := []managed.ConnectionPublisher{managed.NewAPISecretPublisher(mgr.GetClient(), mgr.GetScheme())}
 	if o.Features.Enabled(features.EnableAlphaExternalSecretStores) {
-		cps = append(cps, connection.NewDetailsManager(mgr.GetClient(), apisv1beta1.StoreConfigGroupVersionKind))
+		cps = append(cps, connection.NewDetailsManager(mgr.GetClient(), v1alpha1.UserGroupVersionKind))
 	}
 
 	r := managed.NewReconciler(mgr,
@@ -134,7 +134,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 		return managed.ExternalObservation{}, errors.New(errNotUser)
 	}
 
-	userID := cr.GetAnnotations()[resource.AnnotationKeyExternalName]
+	userID := meta.GetExternalName(cr)
 	if userID == "" {
 		return managed.ExternalObservation{
 			ResourceExists: false,
@@ -172,13 +172,9 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 		return managed.ExternalCreation{}, errors.Wrap(err, errCreateUser)
 	}
 
-	cr.SetAnnotations(map[string]string{
-		resource.AnnotationKeyExternalName: user.UserID,
-	})
+	meta.SetExternalName(cr, user.UserID)
 
-	return managed.ExternalCreation{
-		ExternalNameAssigned: true,
-	}, nil
+	return managed.ExternalCreation{}, nil
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
@@ -187,7 +183,7 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 		return managed.ExternalUpdate{}, errors.New(errNotUser)
 	}
 
-	userID := cr.GetAnnotations()[resource.AnnotationKeyExternalName]
+	userID := meta.GetExternalName(cr)
 	userSpec := generateUserSpec(cr)
 	_, err := c.service.UpdateUser(ctx, userID, userSpec)
 	if err != nil {
@@ -203,7 +199,7 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
 		return errors.New(errNotUser)
 	}
 
-	userID := cr.GetAnnotations()[resource.AnnotationKeyExternalName]
+	userID := meta.GetExternalName(cr)
 	if userID == "" {
 		return nil
 	}
@@ -243,10 +239,14 @@ func generateUserSpec(cr *v1alpha1.User) *clients.UserSpec {
 
 	// Convert external IDs
 	for _, extID := range cr.Spec.ForProvider.ExternalIDs {
+		validated := false
+		if extID.Validated != nil {
+			validated = *extID.Validated
+		}
 		spec.ExternalIDs = append(spec.ExternalIDs, clients.ExternalID{
 			Medium:    extID.Medium,
 			Address:   extID.Address,
-			Validated: extID.Validated,
+			Validated: validated,
 		})
 	}
 
@@ -276,10 +276,11 @@ func generateUserObservation(user *clients.User) v1alpha1.UserObservation {
 
 	// Convert external IDs
 	for _, extID := range user.ExternalIDs {
+		validated := &extID.Validated
 		obs.ExternalIDs = append(obs.ExternalIDs, v1alpha1.ExternalID{
 			Medium:    extID.Medium,
 			Address:   extID.Address,
-			Validated: extID.Validated,
+			Validated: validated,
 		})
 	}
 

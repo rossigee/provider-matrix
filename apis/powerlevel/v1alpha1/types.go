@@ -143,6 +143,66 @@ type PowerLevel struct {
 	Status PowerLevelStatus `json:"status,omitempty"`
 }
 
+// GetProviderConfigReference returns the provider config reference.
+func (p *PowerLevel) GetProviderConfigReference() *xpv1.Reference {
+	return p.Spec.ProviderConfigReference
+}
+
+// SetProviderConfigReference sets the provider config reference.
+func (p *PowerLevel) SetProviderConfigReference(ref *xpv1.Reference) {
+	p.Spec.ProviderConfigReference = ref
+}
+
+// GetCondition returns the condition with the given type.
+func (p *PowerLevel) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
+	return p.Status.GetCondition(ct)
+}
+
+// SetConditions sets the conditions.
+func (p *PowerLevel) SetConditions(c ...xpv1.Condition) {
+	p.Status.SetConditions(c...)
+}
+
+// GetDeletionPolicy returns the deletion policy.
+func (p *PowerLevel) GetDeletionPolicy() xpv1.DeletionPolicy {
+	return p.Spec.DeletionPolicy
+}
+
+// SetDeletionPolicy sets the deletion policy.
+func (p *PowerLevel) SetDeletionPolicy(dp xpv1.DeletionPolicy) {
+	p.Spec.DeletionPolicy = dp
+}
+
+// GetManagementPolicies returns the management policies.
+func (p *PowerLevel) GetManagementPolicies() xpv1.ManagementPolicies {
+	return p.Spec.ManagementPolicies
+}
+
+// SetManagementPolicies sets the management policies.
+func (p *PowerLevel) SetManagementPolicies(mp xpv1.ManagementPolicies) {
+	p.Spec.ManagementPolicies = mp
+}
+
+// GetPublishConnectionDetailsTo returns the publish connection details to configuration.
+func (p *PowerLevel) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDetailsTo {
+	return p.Spec.PublishConnectionDetailsTo
+}
+
+// SetPublishConnectionDetailsTo sets the publish connection details to configuration.
+func (p *PowerLevel) SetPublishConnectionDetailsTo(pcd *xpv1.PublishConnectionDetailsTo) {
+	p.Spec.PublishConnectionDetailsTo = pcd
+}
+
+// GetWriteConnectionSecretToReference returns the write connection secret to reference.
+func (p *PowerLevel) GetWriteConnectionSecretToReference() *xpv1.SecretReference {
+	return p.Spec.WriteConnectionSecretToReference
+}
+
+// SetWriteConnectionSecretToReference sets the write connection secret to reference.
+func (p *PowerLevel) SetWriteConnectionSecretToReference(s *xpv1.SecretReference) {
+	p.Spec.WriteConnectionSecretToReference = s
+}
+
 // +kubebuilder:object:root=true
 
 // PowerLevelList contains a list of PowerLevel

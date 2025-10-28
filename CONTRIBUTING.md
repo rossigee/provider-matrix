@@ -27,7 +27,7 @@ This project adheres to the [Crossplane Code of Conduct](https://github.com/cros
    ```
 3. **Add upstream remote**:
    ```bash
-   git remote add upstream https://github.com/crossplane-contrib/provider-matrix.git
+   git remote add upstream https://github.com/rossigee/provider-matrix.git
    ```
 
 ## Development Setup

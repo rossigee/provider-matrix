@@ -93,6 +93,66 @@ type RoomAlias struct {
 	Status RoomAliasStatus `json:"status,omitempty"`
 }
 
+// GetProviderConfigReference returns the provider config reference.
+func (r *RoomAlias) GetProviderConfigReference() *xpv1.Reference {
+	return r.Spec.ProviderConfigReference
+}
+
+// SetProviderConfigReference sets the provider config reference.
+func (r *RoomAlias) SetProviderConfigReference(ref *xpv1.Reference) {
+	r.Spec.ProviderConfigReference = ref
+}
+
+// GetCondition returns the condition with the given type.
+func (r *RoomAlias) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
+	return r.Status.GetCondition(ct)
+}
+
+// SetConditions sets the conditions.
+func (r *RoomAlias) SetConditions(c ...xpv1.Condition) {
+	r.Status.SetConditions(c...)
+}
+
+// GetDeletionPolicy returns the deletion policy.
+func (r *RoomAlias) GetDeletionPolicy() xpv1.DeletionPolicy {
+	return r.Spec.DeletionPolicy
+}
+
+// SetDeletionPolicy sets the deletion policy.
+func (r *RoomAlias) SetDeletionPolicy(p xpv1.DeletionPolicy) {
+	r.Spec.DeletionPolicy = p
+}
+
+// GetManagementPolicies returns the management policies.
+func (r *RoomAlias) GetManagementPolicies() xpv1.ManagementPolicies {
+	return r.Spec.ManagementPolicies
+}
+
+// SetManagementPolicies sets the management policies.
+func (r *RoomAlias) SetManagementPolicies(p xpv1.ManagementPolicies) {
+	r.Spec.ManagementPolicies = p
+}
+
+// GetPublishConnectionDetailsTo returns the publish connection details to configuration.
+func (r *RoomAlias) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDetailsTo {
+	return r.Spec.PublishConnectionDetailsTo
+}
+
+// SetPublishConnectionDetailsTo sets the publish connection details to configuration.
+func (r *RoomAlias) SetPublishConnectionDetailsTo(p *xpv1.PublishConnectionDetailsTo) {
+	r.Spec.PublishConnectionDetailsTo = p
+}
+
+// GetWriteConnectionSecretToReference returns the write connection secret to reference.
+func (r *RoomAlias) GetWriteConnectionSecretToReference() *xpv1.SecretReference {
+	return r.Spec.WriteConnectionSecretToReference
+}
+
+// SetWriteConnectionSecretToReference sets the write connection secret to reference.
+func (r *RoomAlias) SetWriteConnectionSecretToReference(s *xpv1.SecretReference) {
+	r.Spec.WriteConnectionSecretToReference = s
+}
+
 // +kubebuilder:object:root=true
 
 // RoomAliasList contains a list of RoomAlias

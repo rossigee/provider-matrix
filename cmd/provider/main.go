@@ -20,6 +20,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"gopkg.in/alecthomas/kingpin.v2"
@@ -28,13 +29,15 @@ import (
 	"k8s.io/client-go/tools/leaderelection/resourcelock"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/cache"
+	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	"github.com/crossplane/crossplane-runtime/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/pkg/feature"
 	"github.com/crossplane/crossplane-runtime/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
+
+	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
 
 	"github.com/crossplane-contrib/provider-matrix/apis"
 	"github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
@@ -43,6 +46,7 @@ import (
 	"github.com/crossplane-contrib/provider-matrix/internal/controller/roomalias"
 	"github.com/crossplane-contrib/provider-matrix/internal/controller/user"
 	"github.com/crossplane-contrib/provider-matrix/internal/features"
+	"github.com/crossplane-contrib/provider-matrix/internal/version"
 )
 
 func main() {
@@ -67,8 +71,18 @@ func main() {
 		ctrl.SetLogger(zl)
 	}
 
-	log.Debug("Starting", "sync-interval", syncInterval.String(),
-		"poll-interval", pollInterval.String(), "max-reconcile-rate", *maxReconcileRate)
+	log.Info("Provider starting up",
+		"provider", "provider-matrix",
+		"version", version.Version,
+		"go-version", runtime.Version(),
+		"platform", runtime.GOOS+"/"+runtime.GOARCH,
+		"sync-interval", syncInterval.String(),
+		"poll-interval", pollInterval.String(),
+		"max-reconcile-rate", *maxReconcileRate,
+		"leader-election", *leaderElection,
+		"namespace", *namespace,
+		"external-secret-stores", *enableExternalSecretStores,
+		"debug-mode", *debug)
 
 	cfg, err := ctrl.GetConfig()
 	kingpin.FatalIfError(err, "Cannot get API server rest config")
@@ -110,6 +124,9 @@ func main() {
 	kingpin.FatalIfError(powerlevel.Setup(mgr, o), "Cannot setup PowerLevel controller")
 	kingpin.FatalIfError(roomalias.Setup(mgr, o), "Cannot setup RoomAlias controller")
 
+	kingpin.FatalIfError(mgr.AddHealthzCheck("healthz", healthz.Ping), "Cannot add health check")
+	kingpin.FatalIfError(mgr.AddReadyzCheck("readyz", healthz.Ping), "Cannot add ready check")
+
 	kingpin.FatalIfError(mgr.Start(ctrl.SetupSignalHandler()), "Cannot start controller manager")
 }
 
@@ -120,10 +137,10 @@ func createDefaultProviderConfig(ctx context.Context, mgr ctrl.Manager, namespac
 		},
 		Spec: v1beta1.ProviderConfigSpec{
 			Credentials: v1beta1.ProviderCredentials{
-				Source: "Secret",
-				CommonCredentialSelectors: v1beta1.CommonCredentialSelectors{
-					SecretRef: &v1beta1.SecretKeySelector{
-						SecretReference: v1beta1.SecretReference{
+				Source: xpv1.CredentialsSourceSecret,
+				CommonCredentialSelectors: xpv1.CommonCredentialSelectors{
+					SecretRef: &xpv1.SecretKeySelector{
+						SecretReference: xpv1.SecretReference{
 							Name:      "matrix-creds",
 							Namespace: namespace,
 						},

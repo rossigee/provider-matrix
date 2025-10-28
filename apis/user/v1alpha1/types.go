@@ -163,6 +163,66 @@ type User struct {
 	Status UserStatus `json:"status,omitempty"`
 }
 
+// GetProviderConfigReference returns the provider config reference.
+func (u *User) GetProviderConfigReference() *xpv1.Reference {
+	return u.Spec.ProviderConfigReference
+}
+
+// SetProviderConfigReference sets the provider config reference.
+func (u *User) SetProviderConfigReference(ref *xpv1.Reference) {
+	u.Spec.ProviderConfigReference = ref
+}
+
+// GetCondition returns the condition with the given type.
+func (u *User) GetCondition(ct xpv1.ConditionType) xpv1.Condition {
+	return u.Status.GetCondition(ct)
+}
+
+// SetConditions sets the conditions.
+func (u *User) SetConditions(c ...xpv1.Condition) {
+	u.Status.SetConditions(c...)
+}
+
+// GetDeletionPolicy returns the deletion policy.
+func (u *User) GetDeletionPolicy() xpv1.DeletionPolicy {
+	return u.Spec.DeletionPolicy
+}
+
+// SetDeletionPolicy sets the deletion policy.
+func (u *User) SetDeletionPolicy(p xpv1.DeletionPolicy) {
+	u.Spec.DeletionPolicy = p
+}
+
+// GetManagementPolicies returns the management policies.
+func (u *User) GetManagementPolicies() xpv1.ManagementPolicies {
+	return u.Spec.ManagementPolicies
+}
+
+// SetManagementPolicies sets the management policies.
+func (u *User) SetManagementPolicies(p xpv1.ManagementPolicies) {
+	u.Spec.ManagementPolicies = p
+}
+
+// GetPublishConnectionDetailsTo returns the publish connection details to configuration.
+func (u *User) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDetailsTo {
+	return u.Spec.PublishConnectionDetailsTo
+}
+
+// SetPublishConnectionDetailsTo sets the publish connection details to configuration.
+func (u *User) SetPublishConnectionDetailsTo(p *xpv1.PublishConnectionDetailsTo) {
+	u.Spec.PublishConnectionDetailsTo = p
+}
+
+// GetWriteConnectionSecretToReference returns the write connection secret to reference.
+func (u *User) GetWriteConnectionSecretToReference() *xpv1.SecretReference {
+	return u.Spec.WriteConnectionSecretToReference
+}
+
+// SetWriteConnectionSecretToReference sets the write connection secret to reference.
+func (u *User) SetWriteConnectionSecretToReference(r *xpv1.SecretReference) {
+	u.Spec.WriteConnectionSecretToReference = r
+}
+
 // +kubebuilder:object:root=true
 
 // UserList contains a list of User
