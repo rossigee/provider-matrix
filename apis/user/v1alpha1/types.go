@@ -19,7 +19,7 @@ package v1alpha1
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
 )
 
 // UserParameters define the desired state of a Matrix User
@@ -203,15 +203,7 @@ func (u *User) SetManagementPolicies(p xpv1.ManagementPolicies) {
 	u.Spec.ManagementPolicies = p
 }
 
-// GetPublishConnectionDetailsTo returns the publish connection details to configuration.
-func (u *User) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDetailsTo {
-	return u.Spec.PublishConnectionDetailsTo
-}
 
-// SetPublishConnectionDetailsTo sets the publish connection details to configuration.
-func (u *User) SetPublishConnectionDetailsTo(p *xpv1.PublishConnectionDetailsTo) {
-	u.Spec.PublishConnectionDetailsTo = p
-}
 
 // GetWriteConnectionSecretToReference returns the write connection secret to reference.
 func (u *User) GetWriteConnectionSecretToReference() *xpv1.SecretReference {

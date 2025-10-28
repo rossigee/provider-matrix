@@ -30,8 +30,9 @@ import (
 	"maunium.net/go/mautrix"
 	"maunium.net/go/mautrix/id"
 
-	"github.com/crossplane/crossplane-runtime/pkg/meta"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
+	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
@@ -140,18 +141,26 @@ func NewClient(config *Config) (Client, error) {
 
 // GetConfig extracts the configuration from the provider config
 func GetConfig(ctx context.Context, c client.Client, mg resource.Managed) (*Config, error) {
-	switch {
-	case mg.GetProviderConfigReference() != nil:
-		return UseProviderConfig(ctx, c, mg)
-	default:
-		return nil, errors.New("no credentials specified")
+	if pcr, ok := mg.(resource.ProviderConfigReferencer); ok {
+		switch {
+		case pcr.GetProviderConfigReference() != nil:
+			return UseProviderConfig(ctx, c, mg)
+		default:
+			return nil, errors.New("no credentials specified")
+		}
 	}
+	return nil, errors.New("managed resource does not support provider config references")
 }
 
 // UseProviderConfig extracts configuration from a ProviderConfig
 func UseProviderConfig(ctx context.Context, c client.Client, mg resource.Managed) (*Config, error) {
+	pcr, ok := mg.(resource.ProviderConfigReferencer)
+	if !ok {
+		return nil, errors.New("managed resource does not support provider config references")
+	}
+	
 	pc := &v1beta1.ProviderConfig{}
-	if err := c.Get(ctx, types.NamespacedName{Name: mg.GetProviderConfigReference().Name}, pc); err != nil {
+	if err := c.Get(ctx, types.NamespacedName{Name: pcr.GetProviderConfigReference().Name}, pc); err != nil {
 		return nil, errors.Wrap(err, "cannot get referenced ProviderConfig")
 	}
 
@@ -282,11 +291,21 @@ type providerConfigUsageTracker struct {
 	kube client.Client
 }
 
+// NewProviderConfigUsageTracker creates a new provider config usage tracker
+func NewProviderConfigUsageTracker(kube client.Client) resource.Tracker {
+	return &providerConfigUsageTracker{kube: kube}
+}
+
 func newProviderConfigUsageTracker(kube client.Client) resource.Tracker {
 	return &providerConfigUsageTracker{kube: kube}
 }
 
 func (t *providerConfigUsageTracker) Track(ctx context.Context, mg resource.Managed) error {
+	pcr, ok := mg.(resource.ProviderConfigReferencer)
+	if !ok {
+		return errors.New("managed resource does not support provider config references")
+	}
+	
 	// Create ProviderConfigUsage - namespaced resource per CRD definition
 	pcu := &v1beta1.ProviderConfigUsage{}
 	pcu.SetName(string(mg.GetUID()))
@@ -299,9 +318,12 @@ func (t *providerConfigUsageTracker) Track(ctx context.Context, mg resource.Mana
 	pcu.SetNamespace(namespace)
 	pcu.SetOwnerReferences([]metav1.OwnerReference{meta.AsOwner(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))})
 
-	pcRef := mg.GetProviderConfigReference()
+	pcRef := pcr.GetProviderConfigReference()
 	if pcRef != nil {
-		pcu.ProviderConfigReference = *pcRef
+		pcu.ProviderConfigReference = xpv1.ProviderConfigReference{
+			Kind: "ProviderConfig", // Default kind for provider configs
+			Name: pcRef.Name,
+		}
 	}
 
 	resRef := meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind())

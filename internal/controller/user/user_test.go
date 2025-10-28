@@ -63,7 +63,7 @@ func TestGenerateUserSpec(t *testing.T) {
 							{
 								Medium:    "email",
 								Address:   "admin@example.com",
-								Validated: true,
+								Validated: boolPtr(true),
 							},
 						},
 					},

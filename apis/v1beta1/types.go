@@ -19,7 +19,7 @@ package v1beta1
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
 )
 
 // A ProviderConfigSpec defines the desired state of a ProviderConfig.
@@ -100,16 +100,17 @@ type ProviderConfigUsage struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	xpv1.ProviderConfigUsage `json:",inline"`
+	ProviderConfigReference xpv1.ProviderConfigReference `json:"providerConfigRef"`
+	ResourceReference       xpv1.TypedReference          `json:"resourceRef"`
 }
 
 // GetProviderConfigReference returns the provider config reference.
-func (p *ProviderConfigUsage) GetProviderConfigReference() xpv1.Reference {
+func (p *ProviderConfigUsage) GetProviderConfigReference() xpv1.ProviderConfigReference {
 	return p.ProviderConfigReference
 }
 
 // SetProviderConfigReference sets the provider config reference.
-func (p *ProviderConfigUsage) SetProviderConfigReference(ref xpv1.Reference) {
+func (p *ProviderConfigUsage) SetProviderConfigReference(ref xpv1.ProviderConfigReference) {
 	p.ProviderConfigReference = ref
 }
 

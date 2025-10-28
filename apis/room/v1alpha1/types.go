@@ -20,7 +20,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
 )
 
 // RoomParameters define the desired state of a Matrix Room
@@ -256,15 +256,7 @@ func (r *Room) SetManagementPolicies(p xpv1.ManagementPolicies) {
 	r.Spec.ManagementPolicies = p
 }
 
-// GetPublishConnectionDetailsTo returns the publish connection details to configuration.
-func (r *Room) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDetailsTo {
-	return r.Spec.PublishConnectionDetailsTo
-}
 
-// SetPublishConnectionDetailsTo sets the publish connection details to configuration.
-func (r *Room) SetPublishConnectionDetailsTo(p *xpv1.PublishConnectionDetailsTo) {
-	r.Spec.PublishConnectionDetailsTo = p
-}
 
 // GetWriteConnectionSecretToReference returns the write connection secret to reference.
 func (r *Room) GetWriteConnectionSecretToReference() *xpv1.SecretReference {

@@ -19,7 +19,7 @@ package v1alpha1
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
 )
 
 // PowerLevelParameters define the desired state of room power levels
@@ -183,15 +183,7 @@ func (p *PowerLevel) SetManagementPolicies(mp xpv1.ManagementPolicies) {
 	p.Spec.ManagementPolicies = mp
 }
 
-// GetPublishConnectionDetailsTo returns the publish connection details to configuration.
-func (p *PowerLevel) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDetailsTo {
-	return p.Spec.PublishConnectionDetailsTo
-}
 
-// SetPublishConnectionDetailsTo sets the publish connection details to configuration.
-func (p *PowerLevel) SetPublishConnectionDetailsTo(pcd *xpv1.PublishConnectionDetailsTo) {
-	p.Spec.PublishConnectionDetailsTo = pcd
-}
 
 // GetWriteConnectionSecretToReference returns the write connection secret to reference.
 func (p *PowerLevel) GetWriteConnectionSecretToReference() *xpv1.SecretReference {
