@@ -30,7 +30,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 
 	"github.com/crossplane-contrib/provider-matrix/apis"
 	roomv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/room/v1alpha1"
@@ -112,11 +112,6 @@ func (suite *IntegrationTestSuite) TestUserResource() {
 			Name: "test-user",
 		},
 		Spec: userv1alpha1.UserSpec{
-			ResourceSpec: xpv1.ResourceSpec{
-				ProviderConfigReference: &xpv1.Reference{
-					Name: "test-config",
-				},
-			},
 			ForProvider: userv1alpha1.UserParameters{
 				UserID:      stringPtr("@testuser:example.com"),
 				DisplayName: stringPtr("Test User"),
@@ -124,6 +119,9 @@ func (suite *IntegrationTestSuite) TestUserResource() {
 			},
 		},
 	}
+	user.SetProviderConfigReference(&xpv1.ProviderConfigReference{
+		Name: "test-config",
+	})
 
 	err := suite.client.Create(ctx, user)
 	assert.NoError(suite.T(), err)
@@ -145,11 +143,6 @@ func (suite *IntegrationTestSuite) TestRoomResource() {
 			Name: "test-room",
 		},
 		Spec: roomv1alpha1.RoomSpec{
-			ResourceSpec: xpv1.ResourceSpec{
-				ProviderConfigReference: &xpv1.Reference{
-					Name: "test-config",
-				},
-			},
 			ForProvider: roomv1alpha1.RoomParameters{
 				Name:              stringPtr("Test Room"),
 				Topic:             stringPtr("A test room for integration testing"),
@@ -162,6 +155,9 @@ func (suite *IntegrationTestSuite) TestRoomResource() {
 			},
 		},
 	}
+	room.SetProviderConfigReference(&xpv1.ProviderConfigReference{
+		Name: "test-config",
+	})
 
 	err := suite.client.Create(ctx, room)
 	assert.NoError(suite.T(), err)
@@ -184,17 +180,15 @@ func (suite *IntegrationTestSuite) TestResourceLifecycle() {
 			Name: "lifecycle-user",
 		},
 		Spec: userv1alpha1.UserSpec{
-			ResourceSpec: xpv1.ResourceSpec{
-				ProviderConfigReference: &xpv1.Reference{
-					Name: "test-config",
-				},
-			},
 			ForProvider: userv1alpha1.UserParameters{
 				UserID:      stringPtr("@lifecycle:example.com"),
 				DisplayName: stringPtr("Lifecycle User"),
 			},
 		},
 	}
+	user.SetProviderConfigReference(&xpv1.ProviderConfigReference{
+		Name: "test-config",
+	})
 
 	// Create
 	err := suite.client.Create(ctx, user)
@@ -235,17 +229,15 @@ func BenchmarkUserCreation(b *testing.B) {
 				Name: "bench-user-" + string(rune(i)),
 			},
 			Spec: userv1alpha1.UserSpec{
-				ResourceSpec: xpv1.ResourceSpec{
-					ProviderConfigReference: &xpv1.Reference{
-						Name: "test-config",
-					},
-				},
 				ForProvider: userv1alpha1.UserParameters{
 					UserID:      stringPtr("@bench" + string(rune(i)) + ":example.com"),
 					DisplayName: stringPtr("Benchmark User"),
 				},
 			},
 		}
+		user.SetProviderConfigReference(&xpv1.ProviderConfigReference{
+			Name: "test-config",
+		})
 
 		err := client.Create(ctx, user)
 		require.NoError(b, err)

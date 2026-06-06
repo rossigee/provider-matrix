@@ -19,7 +19,7 @@ package v1alpha1
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 )
 
 // PowerLevelParameters define the desired state of room power levels
@@ -116,13 +116,13 @@ type PowerLevelObservation struct {
 
 // A PowerLevelSpec defines the desired state of a PowerLevel.
 type PowerLevelSpec struct {
-	xpv1.ResourceSpec `json:",inline"`
+	xpv1.ManagedResourceSpec `json:",inline"`
 	ForProvider       PowerLevelParameters `json:"forProvider"`
 }
 
 // A PowerLevelStatus represents the observed state of a PowerLevel.
 type PowerLevelStatus struct {
-	xpv1.ResourceStatus `json:",inline"`
+	xpv1.ManagedResourceStatus `json:",inline"`
 	AtProvider          PowerLevelObservation `json:"atProvider,omitempty"`
 }
 
@@ -144,12 +144,12 @@ type PowerLevel struct {
 }
 
 // GetProviderConfigReference returns the provider config reference.
-func (p *PowerLevel) GetProviderConfigReference() *xpv1.Reference {
+func (p *PowerLevel) GetProviderConfigReference() *xpv1.ProviderConfigReference {
 	return p.Spec.ProviderConfigReference
 }
 
 // SetProviderConfigReference sets the provider config reference.
-func (p *PowerLevel) SetProviderConfigReference(ref *xpv1.Reference) {
+func (p *PowerLevel) SetProviderConfigReference(ref *xpv1.ProviderConfigReference) {
 	p.Spec.ProviderConfigReference = ref
 }
 
@@ -163,15 +163,6 @@ func (p *PowerLevel) SetConditions(c ...xpv1.Condition) {
 	p.Status.SetConditions(c...)
 }
 
-// GetDeletionPolicy returns the deletion policy.
-func (p *PowerLevel) GetDeletionPolicy() xpv1.DeletionPolicy {
-	return p.Spec.DeletionPolicy
-}
-
-// SetDeletionPolicy sets the deletion policy.
-func (p *PowerLevel) SetDeletionPolicy(dp xpv1.DeletionPolicy) {
-	p.Spec.DeletionPolicy = dp
-}
 
 // GetManagementPolicies returns the management policies.
 func (p *PowerLevel) GetManagementPolicies() xpv1.ManagementPolicies {
@@ -186,12 +177,12 @@ func (p *PowerLevel) SetManagementPolicies(mp xpv1.ManagementPolicies) {
 
 
 // GetWriteConnectionSecretToReference returns the write connection secret to reference.
-func (p *PowerLevel) GetWriteConnectionSecretToReference() *xpv1.SecretReference {
+func (p *PowerLevel) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
 	return p.Spec.WriteConnectionSecretToReference
 }
 
 // SetWriteConnectionSecretToReference sets the write connection secret to reference.
-func (p *PowerLevel) SetWriteConnectionSecretToReference(s *xpv1.SecretReference) {
+func (p *PowerLevel) SetWriteConnectionSecretToReference(s *xpv1.LocalSecretReference) {
 	p.Spec.WriteConnectionSecretToReference = s
 }
 

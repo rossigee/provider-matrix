@@ -20,7 +20,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 )
 
 // SpaceParameters define the desired state of a Matrix Space
@@ -201,13 +201,13 @@ type SpaceObservation struct {
 
 // A SpaceSpec defines the desired state of a Space.
 type SpaceSpec struct {
-	xpv1.ResourceSpec `json:",inline"`
+	xpv1.ManagedResourceSpec `json:",inline"`
 	ForProvider       SpaceParameters `json:"forProvider"`
 }
 
 // A SpaceStatus represents the observed state of a Space.
 type SpaceStatus struct {
-	xpv1.ResourceStatus `json:",inline"`
+	xpv1.ManagedResourceStatus `json:",inline"`
 	AtProvider          SpaceObservation `json:"atProvider,omitempty"`
 }
 

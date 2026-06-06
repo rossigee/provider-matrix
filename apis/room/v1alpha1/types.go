@@ -20,7 +20,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 )
 
 // RoomParameters define the desired state of a Matrix Room
@@ -189,13 +189,13 @@ type RoomObservation struct {
 
 // A RoomSpec defines the desired state of a Room.
 type RoomSpec struct {
-	xpv1.ResourceSpec `json:",inline"`
+	xpv1.ManagedResourceSpec `json:",inline"`
 	ForProvider       RoomParameters `json:"forProvider"`
 }
 
 // A RoomStatus represents the observed state of a Room.
 type RoomStatus struct {
-	xpv1.ResourceStatus `json:",inline"`
+	xpv1.ManagedResourceStatus `json:",inline"`
 	AtProvider          RoomObservation `json:"atProvider,omitempty"`
 }
 
@@ -217,12 +217,12 @@ type Room struct {
 }
 
 // GetProviderConfigReference returns the provider config reference.
-func (r *Room) GetProviderConfigReference() *xpv1.Reference {
+func (r *Room) GetProviderConfigReference() *xpv1.ProviderConfigReference {
 	return r.Spec.ProviderConfigReference
 }
 
 // SetProviderConfigReference sets the provider config reference.
-func (r *Room) SetProviderConfigReference(ref *xpv1.Reference) {
+func (r *Room) SetProviderConfigReference(ref *xpv1.ProviderConfigReference) {
 	r.Spec.ProviderConfigReference = ref
 }
 
@@ -236,15 +236,6 @@ func (r *Room) SetConditions(c ...xpv1.Condition) {
 	r.Status.SetConditions(c...)
 }
 
-// GetDeletionPolicy returns the deletion policy.
-func (r *Room) GetDeletionPolicy() xpv1.DeletionPolicy {
-	return r.Spec.DeletionPolicy
-}
-
-// SetDeletionPolicy sets the deletion policy.
-func (r *Room) SetDeletionPolicy(p xpv1.DeletionPolicy) {
-	r.Spec.DeletionPolicy = p
-}
 
 // GetManagementPolicies returns the management policies.
 func (r *Room) GetManagementPolicies() xpv1.ManagementPolicies {
@@ -259,12 +250,12 @@ func (r *Room) SetManagementPolicies(p xpv1.ManagementPolicies) {
 
 
 // GetWriteConnectionSecretToReference returns the write connection secret to reference.
-func (r *Room) GetWriteConnectionSecretToReference() *xpv1.SecretReference {
+func (r *Room) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
 	return r.Spec.WriteConnectionSecretToReference
 }
 
 // SetWriteConnectionSecretToReference sets the write connection secret to reference.
-func (r *Room) SetWriteConnectionSecretToReference(s *xpv1.SecretReference) {
+func (r *Room) SetWriteConnectionSecretToReference(s *xpv1.LocalSecretReference) {
 	r.Spec.WriteConnectionSecretToReference = s
 }
 

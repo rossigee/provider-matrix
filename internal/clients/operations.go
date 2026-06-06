@@ -130,7 +130,7 @@ func (c *matrixClient) CreateRoom(ctx context.Context, roomSpec *RoomSpec) (*Roo
 		RoomAliasName:   roomSpec.Alias,
 		Preset:          roomSpec.Preset,
 		Visibility:      roomSpec.Visibility,
-		RoomVersion:     roomSpec.RoomVersion,
+		RoomVersion:     id.RoomVersion(roomSpec.RoomVersion),
 		CreationContent: roomSpec.CreationContent,
 		Invite:          make([]id.UserID, len(roomSpec.Invite)),
 	}
@@ -221,7 +221,7 @@ func (c *matrixClient) CreateRoom(ctx context.Context, roomSpec *RoomSpec) (*Roo
 			return nil, errors.Wrap(err, "invalid avatar URL")
 		}
 		_, err = c.client.SendStateEvent(ctx, resp.RoomID, event.StateRoomAvatar, "", &event.RoomAvatarEventContent{
-			URL: avatarURL,
+			URL: avatarURL.CUString(),
 		})
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to set avatar")
@@ -278,7 +278,7 @@ func (c *matrixClient) GetRoom(ctx context.Context, roomID string) (*Room, error
 	var avatarContent event.RoomAvatarEventContent
 	err = c.client.StateEvent(ctx, roomIDObj, event.StateRoomAvatar, "", &avatarContent)
 	if err == nil {
-		room.AvatarURL = avatarContent.URL.String()
+		room.AvatarURL = string(avatarContent.URL)
 	}
 
 	// Get power levels

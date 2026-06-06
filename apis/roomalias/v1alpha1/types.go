@@ -19,7 +19,7 @@ package v1alpha1
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 )
 
 // RoomAliasParameters define the desired state of a Matrix Room Alias
@@ -65,13 +65,13 @@ type RoomAliasObservation struct {
 
 // A RoomAliasSpec defines the desired state of a RoomAlias.
 type RoomAliasSpec struct {
-	xpv1.ResourceSpec `json:",inline"`
+	xpv1.ManagedResourceSpec `json:",inline"`
 	ForProvider       RoomAliasParameters `json:"forProvider"`
 }
 
 // A RoomAliasStatus represents the observed state of a RoomAlias.
 type RoomAliasStatus struct {
-	xpv1.ResourceStatus `json:",inline"`
+	xpv1.ManagedResourceStatus `json:",inline"`
 	AtProvider          RoomAliasObservation `json:"atProvider,omitempty"`
 }
 
@@ -94,12 +94,12 @@ type RoomAlias struct {
 }
 
 // GetProviderConfigReference returns the provider config reference.
-func (r *RoomAlias) GetProviderConfigReference() *xpv1.Reference {
+func (r *RoomAlias) GetProviderConfigReference() *xpv1.ProviderConfigReference {
 	return r.Spec.ProviderConfigReference
 }
 
 // SetProviderConfigReference sets the provider config reference.
-func (r *RoomAlias) SetProviderConfigReference(ref *xpv1.Reference) {
+func (r *RoomAlias) SetProviderConfigReference(ref *xpv1.ProviderConfigReference) {
 	r.Spec.ProviderConfigReference = ref
 }
 
@@ -113,15 +113,6 @@ func (r *RoomAlias) SetConditions(c ...xpv1.Condition) {
 	r.Status.SetConditions(c...)
 }
 
-// GetDeletionPolicy returns the deletion policy.
-func (r *RoomAlias) GetDeletionPolicy() xpv1.DeletionPolicy {
-	return r.Spec.DeletionPolicy
-}
-
-// SetDeletionPolicy sets the deletion policy.
-func (r *RoomAlias) SetDeletionPolicy(p xpv1.DeletionPolicy) {
-	r.Spec.DeletionPolicy = p
-}
 
 // GetManagementPolicies returns the management policies.
 func (r *RoomAlias) GetManagementPolicies() xpv1.ManagementPolicies {
@@ -136,12 +127,12 @@ func (r *RoomAlias) SetManagementPolicies(p xpv1.ManagementPolicies) {
 
 
 // GetWriteConnectionSecretToReference returns the write connection secret to reference.
-func (r *RoomAlias) GetWriteConnectionSecretToReference() *xpv1.SecretReference {
+func (r *RoomAlias) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
 	return r.Spec.WriteConnectionSecretToReference
 }
 
 // SetWriteConnectionSecretToReference sets the write connection secret to reference.
-func (r *RoomAlias) SetWriteConnectionSecretToReference(s *xpv1.SecretReference) {
+func (r *RoomAlias) SetWriteConnectionSecretToReference(s *xpv1.LocalSecretReference) {
 	r.Spec.WriteConnectionSecretToReference = s
 }
 

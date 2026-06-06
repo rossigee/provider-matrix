@@ -19,7 +19,7 @@ package v1alpha1
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 )
 
 // UserParameters define the desired state of a Matrix User
@@ -136,13 +136,13 @@ type Device struct {
 
 // A UserSpec defines the desired state of a User.
 type UserSpec struct {
-	xpv1.ResourceSpec `json:",inline"`
+	xpv1.ManagedResourceSpec `json:",inline"`
 	ForProvider       UserParameters `json:"forProvider"`
 }
 
 // A UserStatus represents the observed state of a User.
 type UserStatus struct {
-	xpv1.ResourceStatus `json:",inline"`
+	xpv1.ManagedResourceStatus `json:",inline"`
 	AtProvider          UserObservation `json:"atProvider,omitempty"`
 }
 
@@ -164,12 +164,12 @@ type User struct {
 }
 
 // GetProviderConfigReference returns the provider config reference.
-func (u *User) GetProviderConfigReference() *xpv1.Reference {
+func (u *User) GetProviderConfigReference() *xpv1.ProviderConfigReference {
 	return u.Spec.ProviderConfigReference
 }
 
 // SetProviderConfigReference sets the provider config reference.
-func (u *User) SetProviderConfigReference(ref *xpv1.Reference) {
+func (u *User) SetProviderConfigReference(ref *xpv1.ProviderConfigReference) {
 	u.Spec.ProviderConfigReference = ref
 }
 
@@ -183,15 +183,6 @@ func (u *User) SetConditions(c ...xpv1.Condition) {
 	u.Status.SetConditions(c...)
 }
 
-// GetDeletionPolicy returns the deletion policy.
-func (u *User) GetDeletionPolicy() xpv1.DeletionPolicy {
-	return u.Spec.DeletionPolicy
-}
-
-// SetDeletionPolicy sets the deletion policy.
-func (u *User) SetDeletionPolicy(p xpv1.DeletionPolicy) {
-	u.Spec.DeletionPolicy = p
-}
 
 // GetManagementPolicies returns the management policies.
 func (u *User) GetManagementPolicies() xpv1.ManagementPolicies {
@@ -206,12 +197,12 @@ func (u *User) SetManagementPolicies(p xpv1.ManagementPolicies) {
 
 
 // GetWriteConnectionSecretToReference returns the write connection secret to reference.
-func (u *User) GetWriteConnectionSecretToReference() *xpv1.SecretReference {
+func (u *User) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
 	return u.Spec.WriteConnectionSecretToReference
 }
 
 // SetWriteConnectionSecretToReference sets the write connection secret to reference.
-func (u *User) SetWriteConnectionSecretToReference(r *xpv1.SecretReference) {
+func (u *User) SetWriteConnectionSecretToReference(r *xpv1.LocalSecretReference) {
 	u.Spec.WriteConnectionSecretToReference = r
 }
 

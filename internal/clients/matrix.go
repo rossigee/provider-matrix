@@ -30,7 +30,7 @@ import (
 	"maunium.net/go/mautrix"
 	"maunium.net/go/mautrix/id"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -165,7 +165,11 @@ func UseProviderConfig(ctx context.Context, c client.Client, mg resource.Managed
 	}
 
 	t := newProviderConfigUsageTracker(c)
-	if err := t.Track(ctx, mg); err != nil {
+	modernManaged, ok := mg.(resource.ModernManaged)
+	if !ok {
+		return nil, errors.New("managed resource does not implement ModernManaged")
+	}
+	if err := t.Track(ctx, modernManaged); err != nil {
 		return nil, errors.Wrap(err, "cannot track ProviderConfig usage")
 	}
 
@@ -292,25 +296,18 @@ type providerConfigUsageTracker struct {
 }
 
 // NewProviderConfigUsageTracker creates a new provider config usage tracker
-func NewProviderConfigUsageTracker(kube client.Client) resource.Tracker {
+func NewProviderConfigUsageTracker(kube client.Client) resource.ModernTracker {
 	return &providerConfigUsageTracker{kube: kube}
 }
 
-func newProviderConfigUsageTracker(kube client.Client) resource.Tracker {
+func newProviderConfigUsageTracker(kube client.Client) resource.ModernTracker {
 	return &providerConfigUsageTracker{kube: kube}
 }
 
-func (t *providerConfigUsageTracker) Track(ctx context.Context, mg resource.Managed) error {
-	pcr, ok := mg.(resource.ProviderConfigReferencer)
-	if !ok {
-		return errors.New("managed resource does not support provider config references")
-	}
-	
+func (t *providerConfigUsageTracker) Track(ctx context.Context, mg resource.ModernManaged) error {
 	// Create ProviderConfigUsage - namespaced resource per CRD definition
 	pcu := &v1beta1.ProviderConfigUsage{}
 	pcu.SetName(string(mg.GetUID()))
-	// Set namespace to crossplane-system if managed resource has no namespace (cluster-scoped)
-	// Otherwise use the managed resource namespace
 	namespace := mg.GetNamespace()
 	if namespace == "" {
 		namespace = "crossplane-system"
@@ -318,10 +315,10 @@ func (t *providerConfigUsageTracker) Track(ctx context.Context, mg resource.Mana
 	pcu.SetNamespace(namespace)
 	pcu.SetOwnerReferences([]metav1.OwnerReference{meta.AsOwner(meta.TypedReferenceTo(mg, mg.GetObjectKind().GroupVersionKind()))})
 
-	pcRef := pcr.GetProviderConfigReference()
+	pcRef := mg.GetProviderConfigReference()
 	if pcRef != nil {
 		pcu.ProviderConfigReference = xpv1.ProviderConfigReference{
-			Kind: "ProviderConfig", // Default kind for provider configs
+			Kind: "ProviderConfig",
 			Name: pcRef.Name,
 		}
 	}
