@@ -137,13 +137,13 @@ type Device struct {
 // A UserSpec defines the desired state of a User.
 type UserSpec struct {
 	xpv1.ManagedResourceSpec `json:",inline"`
-	ForProvider       UserParameters `json:"forProvider"`
+	ForProvider              UserParameters `json:"forProvider"`
 }
 
 // A UserStatus represents the observed state of a User.
 type UserStatus struct {
 	xpv1.ManagedResourceStatus `json:",inline"`
-	AtProvider          UserObservation `json:"atProvider,omitempty"`
+	AtProvider                 UserObservation `json:"atProvider,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -183,7 +183,6 @@ func (u *User) SetConditions(c ...xpv1.Condition) {
 	u.Status.SetConditions(c...)
 }
 
-
 // GetManagementPolicies returns the management policies.
 func (u *User) GetManagementPolicies() xpv1.ManagementPolicies {
 	return u.Spec.ManagementPolicies
@@ -193,8 +192,6 @@ func (u *User) GetManagementPolicies() xpv1.ManagementPolicies {
 func (u *User) SetManagementPolicies(p xpv1.ManagementPolicies) {
 	u.Spec.ManagementPolicies = p
 }
-
-
 
 // GetWriteConnectionSecretToReference returns the write connection secret to reference.
 func (u *User) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {

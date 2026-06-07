@@ -66,13 +66,13 @@ type RoomAliasObservation struct {
 // A RoomAliasSpec defines the desired state of a RoomAlias.
 type RoomAliasSpec struct {
 	xpv1.ManagedResourceSpec `json:",inline"`
-	ForProvider       RoomAliasParameters `json:"forProvider"`
+	ForProvider              RoomAliasParameters `json:"forProvider"`
 }
 
 // A RoomAliasStatus represents the observed state of a RoomAlias.
 type RoomAliasStatus struct {
 	xpv1.ManagedResourceStatus `json:",inline"`
-	AtProvider          RoomAliasObservation `json:"atProvider,omitempty"`
+	AtProvider                 RoomAliasObservation `json:"atProvider,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -113,7 +113,6 @@ func (r *RoomAlias) SetConditions(c ...xpv1.Condition) {
 	r.Status.SetConditions(c...)
 }
 
-
 // GetManagementPolicies returns the management policies.
 func (r *RoomAlias) GetManagementPolicies() xpv1.ManagementPolicies {
 	return r.Spec.ManagementPolicies
@@ -123,8 +122,6 @@ func (r *RoomAlias) GetManagementPolicies() xpv1.ManagementPolicies {
 func (r *RoomAlias) SetManagementPolicies(p xpv1.ManagementPolicies) {
 	r.Spec.ManagementPolicies = p
 }
-
-
 
 // GetWriteConnectionSecretToReference returns the write connection secret to reference.
 func (r *RoomAlias) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {

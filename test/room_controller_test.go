@@ -33,10 +33,10 @@ import (
 
 // MockRoomClient implements clients.Client for Room testing
 type MockRoomClient struct {
-	createRoomFn   func(ctx context.Context, room *clients.RoomSpec) (*clients.Room, error)
-	getRoomFn      func(ctx context.Context, roomID string) (*clients.Room, error)
-	updateRoomFn   func(ctx context.Context, roomID string, room *clients.RoomSpec) (*clients.Room, error)
-	deleteRoomFn   func(ctx context.Context, roomID string) error
+	createRoomFn func(ctx context.Context, room *clients.RoomSpec) (*clients.Room, error)
+	getRoomFn    func(ctx context.Context, roomID string) (*clients.Room, error)
+	updateRoomFn func(ctx context.Context, roomID string, room *clients.RoomSpec) (*clients.Room, error)
+	deleteRoomFn func(ctx context.Context, roomID string) error
 }
 
 func (m *MockRoomClient) CreateRoom(ctx context.Context, room *clients.RoomSpec) (*clients.Room, error) {
@@ -134,10 +134,10 @@ func TestRoomCreate(t *testing.T) {
 	}
 
 	spec := &clients.RoomSpec{
-		Name:                 "Test Room",
-		Topic:                "A test room",
-		Preset:               "private_chat",
-		EncryptionEnabled:    true,
+		Name:              "Test Room",
+		Topic:             "A test room",
+		Preset:            "private_chat",
+		EncryptionEnabled: true,
 	}
 
 	created, err := mockClient.CreateRoom(context.Background(), spec)

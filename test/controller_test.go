@@ -33,9 +33,9 @@ import (
 
 // MockMatrixClient implements clients.Client for testing
 type MockMatrixClient struct {
-	createUserFn   func(ctx context.Context, user *clients.UserSpec) (*clients.User, error)
-	getUserFn      func(ctx context.Context, userID string) (*clients.User, error)
-	updateUserFn   func(ctx context.Context, userID string, user *clients.UserSpec) (*clients.User, error)
+	createUserFn     func(ctx context.Context, user *clients.UserSpec) (*clients.User, error)
+	getUserFn        func(ctx context.Context, userID string) (*clients.User, error)
+	updateUserFn     func(ctx context.Context, userID string, user *clients.UserSpec) (*clients.User, error)
 	deactivateUserFn func(ctx context.Context, userID string) error
 }
 
@@ -247,11 +247,11 @@ func TestExternalDeleteError(t *testing.T) {
 // TestUserSpecGeneration tests conversion from CR to client spec
 func TestUserSpecGeneration(t *testing.T) {
 	tests := []struct {
-		name     string
-		userID   *string
-		displayName *string
-		password *string
-		admin    *bool
+		name         string
+		userID       *string
+		displayName  *string
+		password     *string
+		admin        *bool
 		expectFields map[string]interface{}
 	}{
 		{

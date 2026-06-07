@@ -202,13 +202,13 @@ type SpaceObservation struct {
 // A SpaceSpec defines the desired state of a Space.
 type SpaceSpec struct {
 	xpv1.ManagedResourceSpec `json:",inline"`
-	ForProvider       SpaceParameters `json:"forProvider"`
+	ForProvider              SpaceParameters `json:"forProvider"`
 }
 
 // A SpaceStatus represents the observed state of a Space.
 type SpaceStatus struct {
 	xpv1.ManagedResourceStatus `json:",inline"`
-	AtProvider          SpaceObservation `json:"atProvider,omitempty"`
+	AtProvider                 SpaceObservation `json:"atProvider,omitempty"`
 }
 
 // +kubebuilder:object:root=true

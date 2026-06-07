@@ -29,11 +29,11 @@ import (
 
 // MockAdminClient for testing admin operations
 type MockAdminClient struct {
-	listUsersFn       func(ctx context.Context, from string, limit int) (*clients.ListUsersResponse, error)
-	listRoomsFn       func(ctx context.Context, from string, limit int) (*clients.ListRoomsResponse, error)
-	makeRoomAdminFn   func(ctx context.Context, roomID, userID string) error
-	blockRoomFn       func(ctx context.Context, roomID string, block bool) error
-	deactivateUserFn  func(ctx context.Context, userID string) error
+	listUsersFn      func(ctx context.Context, from string, limit int) (*clients.ListUsersResponse, error)
+	listRoomsFn      func(ctx context.Context, from string, limit int) (*clients.ListRoomsResponse, error)
+	makeRoomAdminFn  func(ctx context.Context, roomID, userID string) error
+	blockRoomFn      func(ctx context.Context, roomID string, block bool) error
+	deactivateUserFn func(ctx context.Context, userID string) error
 }
 
 func (m *MockAdminClient) ListUsers(ctx context.Context, from string, limit int) (*clients.ListUsersResponse, error) {

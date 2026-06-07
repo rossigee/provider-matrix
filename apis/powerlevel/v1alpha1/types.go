@@ -117,13 +117,13 @@ type PowerLevelObservation struct {
 // A PowerLevelSpec defines the desired state of a PowerLevel.
 type PowerLevelSpec struct {
 	xpv1.ManagedResourceSpec `json:",inline"`
-	ForProvider       PowerLevelParameters `json:"forProvider"`
+	ForProvider              PowerLevelParameters `json:"forProvider"`
 }
 
 // A PowerLevelStatus represents the observed state of a PowerLevel.
 type PowerLevelStatus struct {
 	xpv1.ManagedResourceStatus `json:",inline"`
-	AtProvider          PowerLevelObservation `json:"atProvider,omitempty"`
+	AtProvider                 PowerLevelObservation `json:"atProvider,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -163,7 +163,6 @@ func (p *PowerLevel) SetConditions(c ...xpv1.Condition) {
 	p.Status.SetConditions(c...)
 }
 
-
 // GetManagementPolicies returns the management policies.
 func (p *PowerLevel) GetManagementPolicies() xpv1.ManagementPolicies {
 	return p.Spec.ManagementPolicies
@@ -173,8 +172,6 @@ func (p *PowerLevel) GetManagementPolicies() xpv1.ManagementPolicies {
 func (p *PowerLevel) SetManagementPolicies(mp xpv1.ManagementPolicies) {
 	p.Spec.ManagementPolicies = mp
 }
-
-
 
 // GetWriteConnectionSecretToReference returns the write connection secret to reference.
 func (p *PowerLevel) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {

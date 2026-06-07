@@ -190,13 +190,13 @@ type RoomObservation struct {
 // A RoomSpec defines the desired state of a Room.
 type RoomSpec struct {
 	xpv1.ManagedResourceSpec `json:",inline"`
-	ForProvider       RoomParameters `json:"forProvider"`
+	ForProvider              RoomParameters `json:"forProvider"`
 }
 
 // A RoomStatus represents the observed state of a Room.
 type RoomStatus struct {
 	xpv1.ManagedResourceStatus `json:",inline"`
-	AtProvider          RoomObservation `json:"atProvider,omitempty"`
+	AtProvider                 RoomObservation `json:"atProvider,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -236,7 +236,6 @@ func (r *Room) SetConditions(c ...xpv1.Condition) {
 	r.Status.SetConditions(c...)
 }
 
-
 // GetManagementPolicies returns the management policies.
 func (r *Room) GetManagementPolicies() xpv1.ManagementPolicies {
 	return r.Spec.ManagementPolicies
@@ -246,8 +245,6 @@ func (r *Room) GetManagementPolicies() xpv1.ManagementPolicies {
 func (r *Room) SetManagementPolicies(p xpv1.ManagementPolicies) {
 	r.Spec.ManagementPolicies = p
 }
-
-
 
 // GetWriteConnectionSecretToReference returns the write connection secret to reference.
 func (r *Room) GetWriteConnectionSecretToReference() *xpv1.LocalSecretReference {
