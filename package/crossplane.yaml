@@ -3,8 +3,8 @@ kind: Provider
 metadata:
   name: provider-matrix
   annotations:
-    meta.crossplane.io/maintainer: Crossplane Maintainers <info@crossplane.io>
-    meta.crossplane.io/source: github.com/crossplane-contrib/provider-matrix
+    meta.crossplane.io/maintainer: Ross Golder <ross@golder.org>
+    meta.crossplane.io/source: github.com/rossigee/provider-matrix
     meta.crossplane.io/license: Apache-2.0
     meta.crossplane.io/description: |
       The Matrix provider enables Crossplane to manage Matrix homeserver resources.
