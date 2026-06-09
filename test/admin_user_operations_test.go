@@ -29,9 +29,9 @@ import (
 
 // MockAdminUserClient for testing admin-specific user operations
 type MockAdminUserClient struct {
-	createUserAdminFn   func(ctx context.Context, user *clients.UserSpec) (*clients.User, error)
-	getUserAdminFn      func(ctx context.Context, userID string) (*clients.User, error)
-	updateUserAdminFn   func(ctx context.Context, userID string, user *clients.UserSpec) (*clients.User, error)
+	createUserAdminFn     func(ctx context.Context, user *clients.UserSpec) (*clients.User, error)
+	getUserAdminFn        func(ctx context.Context, userID string) (*clients.User, error)
+	updateUserAdminFn     func(ctx context.Context, userID string, user *clients.UserSpec) (*clients.User, error)
 	deactivateUserAdminFn func(ctx context.Context, userID string) error
 }
 

@@ -326,8 +326,8 @@ func TestBatchPartialFailure(t *testing.T) {
 
 // MockFilterClient for testing filtering and search
 type MockFilterClient struct {
-	users  map[string]*clients.User
-	rooms  map[string]*clients.Room
+	users map[string]*clients.User
+	rooms map[string]*clients.Room
 }
 
 func NewMockFilterClient() *MockFilterClient {
@@ -335,12 +335,12 @@ func NewMockFilterClient() *MockFilterClient {
 		users: map[string]*clients.User{
 			"@admin1:example.com": {UserID: "@admin1:example.com", Admin: true, DisplayName: "Admin One"},
 			"@admin2:example.com": {UserID: "@admin2:example.com", Admin: true, DisplayName: "Admin Two"},
-			"@user1:example.com": {UserID: "@user1:example.com", Admin: false, DisplayName: "User One"},
-			"@user2:example.com": {UserID: "@user2:example.com", Admin: false, DisplayName: "User Two"},
+			"@user1:example.com":  {UserID: "@user1:example.com", Admin: false, DisplayName: "User One"},
+			"@user2:example.com":  {UserID: "@user2:example.com", Admin: false, DisplayName: "User Two"},
 		},
 		rooms: map[string]*clients.Room{
-			"!public1:example.com": {RoomID: "!public1:example.com", Visibility: "public", EncryptionEnabled: false},
-			"!public2:example.com": {RoomID: "!public2:example.com", Visibility: "public", EncryptionEnabled: true},
+			"!public1:example.com":  {RoomID: "!public1:example.com", Visibility: "public", EncryptionEnabled: false},
+			"!public2:example.com":  {RoomID: "!public2:example.com", Visibility: "public", EncryptionEnabled: true},
 			"!private1:example.com": {RoomID: "!private1:example.com", Visibility: "private", EncryptionEnabled: false},
 			"!private2:example.com": {RoomID: "!private2:example.com", Visibility: "private", EncryptionEnabled: true},
 		},

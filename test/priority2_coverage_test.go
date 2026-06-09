@@ -200,11 +200,11 @@ func TestGetRoomDetails(t *testing.T) {
 	mockClient := &MockRoomDetailsClient{
 		getRoomDetailsFn: func(ctx context.Context, roomID string) (*clients.Room, error) {
 			return &clients.Room{
-				RoomID:         roomID,
-				Name:           "General",
-				Topic:          "General discussion",
-				JoinedMembers:  42,
-				Visibility:     "public",
+				RoomID:        roomID,
+				Name:          "General",
+				Topic:         "General discussion",
+				JoinedMembers: 42,
+				Visibility:    "public",
 			}, nil
 		},
 	}
