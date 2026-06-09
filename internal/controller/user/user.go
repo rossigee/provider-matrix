@@ -63,7 +63,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		}),
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithPollInterval(o.PollInterval),
-		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorder(name))))
+		managed.WithRecorder(nil))
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
