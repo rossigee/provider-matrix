@@ -46,6 +46,7 @@ import (
 	"github.com/crossplane-contrib/provider-matrix/internal/controller/roomalias"
 	"github.com/crossplane-contrib/provider-matrix/internal/controller/user"
 	"github.com/crossplane-contrib/provider-matrix/internal/features"
+	"github.com/crossplane-contrib/provider-matrix/internal/tracing"
 	"github.com/crossplane-contrib/provider-matrix/internal/version"
 )
 
@@ -64,12 +65,17 @@ func main() {
 
 	zl := zap.New(zap.UseDevMode(*debug))
 	log := logging.NewLogrLogger(zl.WithName("provider-matrix"))
+
+	shutdownTracing := tracing.Init("provider-matrix")
+	defer shutdownTracing(context.Background())
 	if *debug {
 		// The controller-runtime runs with a no-op logger by default. It is
 		// *very* verbose even at info level, so we only provide it a real
 		// logger when we're running in debug mode.
 		ctrl.SetLogger(zl)
 	}
+
+	shutdownTracing(context.Background())
 
 	log.Info("Provider starting up",
 		"provider", "provider-matrix",
