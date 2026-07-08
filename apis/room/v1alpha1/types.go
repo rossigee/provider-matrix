@@ -17,10 +17,9 @@ limitations under the License.
 package v1alpha1
 
 import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/crossplane/crossplane/apis/v2/core/v2"
+	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-
-	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 )
 
 // RoomParameters define the desired state of a Matrix Room

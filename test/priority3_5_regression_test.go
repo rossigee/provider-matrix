@@ -18,12 +18,10 @@ package test
 
 import (
 	"context"
-	"testing"
-
+	"github.com/crossplane-contrib/provider-matrix/internal/clients"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/crossplane-contrib/provider-matrix/internal/clients"
+	"testing"
 )
 
 // Priority 3.5: Field-Level Updates (Regression Prevention)

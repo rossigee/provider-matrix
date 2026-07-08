@@ -19,17 +19,15 @@ package test
 import (
 	"context"
 	"fmt"
+	"github.com/crossplane-contrib/provider-matrix/internal/clients"
+	"github.com/pkg/errors"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
-
-	"github.com/pkg/errors"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
-	"github.com/crossplane-contrib/provider-matrix/internal/clients"
 )
 
 // Priority 3: Real Matrix Server Integration Simulation

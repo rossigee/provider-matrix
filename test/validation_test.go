@@ -17,9 +17,8 @@ limitations under the License.
 package test
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 // TestValidateMatrixID tests Matrix ID validation logic

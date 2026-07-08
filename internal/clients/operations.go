@@ -18,7 +18,6 @@ package clients
 
 import (
 	"context"
-
 	"github.com/pkg/errors"
 	"maunium.net/go/mautrix"
 	"maunium.net/go/mautrix/event"

@@ -17,9 +17,8 @@ limitations under the License.
 package clients
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestNewClient(t *testing.T) {

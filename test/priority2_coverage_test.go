@@ -18,14 +18,12 @@ package test
 
 import (
 	"context"
-	"testing"
-	"time"
-
+	"github.com/crossplane-contrib/provider-matrix/internal/clients"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/crossplane-contrib/provider-matrix/internal/clients"
+	"testing"
+	"time"
 )
 
 // Priority 2: Domain Extraction Edge Cases

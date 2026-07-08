@@ -18,27 +18,6 @@ package main
 
 import (
 	"context"
-	"os"
-	"path/filepath"
-	"runtime"
-	"time"
-
-	"gopkg.in/alecthomas/kingpin.v2"
-	kerrors "k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/tools/leaderelection/resourcelock"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/cache"
-	"sigs.k8s.io/controller-runtime/pkg/healthz"
-	"sigs.k8s.io/controller-runtime/pkg/log/zap"
-
-	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
-	"github.com/crossplane/crossplane-runtime/v2/pkg/feature"
-	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
-	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
-
-	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
-
 	"github.com/crossplane-contrib/provider-matrix/apis"
 	"github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
 	"github.com/crossplane-contrib/provider-matrix/internal/controller/powerlevel"
@@ -48,6 +27,23 @@ import (
 	"github.com/crossplane-contrib/provider-matrix/internal/features"
 	"github.com/crossplane-contrib/provider-matrix/internal/tracing"
 	"github.com/crossplane-contrib/provider-matrix/internal/version"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/feature"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
+	"github.com/crossplane/crossplane/apis/v2/core/v2"
+	"gopkg.in/alecthomas/kingpin.v2"
+	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/tools/leaderelection/resourcelock"
+	"os"
+	"path/filepath"
+	"runtime"
+	"sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/cache"
+	"sigs.k8s.io/controller-runtime/pkg/healthz"
+	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	"time"
 )
 
 func main() {
@@ -74,7 +70,6 @@ func main() {
 		// logger when we're running in debug mode.
 		ctrl.SetLogger(zl)
 	}
-
 
 	log.Info("Provider starting up",
 		"provider", "provider-matrix",

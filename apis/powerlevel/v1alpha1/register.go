@@ -17,11 +17,9 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"reflect"
-
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"sigs.k8s.io/controller-runtime/pkg/scheme"
+	"reflect"
 )
 
 // Package type metadata.
@@ -35,7 +33,7 @@ var (
 	SchemeGroupVersion = schema.GroupVersion{Group: Group, Version: Version}
 
 	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
-	SchemeBuilder = &scheme.Builder{GroupVersion: SchemeGroupVersion} //nolint:staticcheck
+	SchemeBuilder = runtime.NewSchemeBuilder(addKnownTypes)
 )
 
 // PowerLevel type metadata.
@@ -46,11 +44,11 @@ var (
 	PowerLevelGroupVersionKind = SchemeGroupVersion.WithKind(PowerLevelKind)
 )
 
-func init() {
-	SchemeBuilder.Register(&PowerLevel{}, &PowerLevelList{})
+// AddToScheme adds all types of this group into the given scheme.
+func addKnownTypes(s *runtime.Scheme) error {
+	return nil
 }
 
-// AddToScheme adds all types of this group into the given scheme.
 func AddToScheme(s *runtime.Scheme) error {
 	return SchemeBuilder.AddToScheme(s)
 }

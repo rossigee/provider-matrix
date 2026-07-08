@@ -18,14 +18,13 @@ limitations under the License.
 package apis
 
 import (
+	"github.com/crossplane-contrib/provider-matrix/apis/powerlevel/v1alpha1"
+	"github.com/crossplane-contrib/provider-matrix/apis/room/v1alpha1"
+	"github.com/crossplane-contrib/provider-matrix/apis/roomalias/v1alpha1"
+	"github.com/crossplane-contrib/provider-matrix/apis/space/v1alpha1"
+	"github.com/crossplane-contrib/provider-matrix/apis/user/v1alpha1"
+	"github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
-
-	powerlevelv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/powerlevel/v1alpha1"
-	roomv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/room/v1alpha1"
-	roomaliasv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/roomalias/v1alpha1"
-	spacev1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/space/v1alpha1"
-	userv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/user/v1alpha1"
-	v1beta1 "github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
 )
 
 func init() {

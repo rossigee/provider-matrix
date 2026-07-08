@@ -19,23 +19,20 @@ package clients
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"net/url"
-	"strings"
-	"time"
-
+	"github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
+	"github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"maunium.net/go/mautrix"
 	"maunium.net/go/mautrix/id"
-
-	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
-	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
-	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
+	"net/http"
+	"net/url"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	"github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
+	"strings"
+	"time"
 )
 
 const (
