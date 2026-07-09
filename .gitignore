@@ -66,3 +66,4 @@ kubeconfig
 test-results.xml
 junit.xml/.cache/
 .cache/
+vendor/
