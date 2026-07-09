@@ -19,8 +19,8 @@ package test
 import (
 	"context"
 	"github.com/crossplane-contrib/provider-matrix/apis"
-	"github.com/crossplane-contrib/provider-matrix/apis/room/v1alpha1"
-	"github.com/crossplane-contrib/provider-matrix/apis/user/v1alpha1"
+	roomv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/room/v1alpha1"
+	userv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/user/v1alpha1"
 	"github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/stretchr/testify/assert"

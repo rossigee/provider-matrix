@@ -22,6 +22,14 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
+// User type metadata.
+var (
+	UserKind             = reflect.TypeOf(User{}).Name()
+	UserGroupKind        = schema.GroupKind{Group: Group, Kind: UserKind}
+	UserKindAPIVersion   = UserKind + "." + SchemeGroupVersion.String()
+	UserGroupVersionKind = SchemeGroupVersion.WithKind(UserKind)
+)
+
 // ExternalID type metadata.
 var (
 	ExternalIDKind             = reflect.TypeOf(ExternalID{}).Name()

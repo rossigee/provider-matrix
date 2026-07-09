@@ -22,6 +22,14 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
+// Room type metadata.
+var (
+	RoomKind             = reflect.TypeOf(Room{}).Name()
+	RoomGroupKind        = schema.GroupKind{Group: Group, Kind: RoomKind}
+	RoomKindAPIVersion   = RoomKind + "." + SchemeGroupVersion.String()
+	RoomGroupVersionKind = SchemeGroupVersion.WithKind(RoomKind)
+)
+
 // StateEvent type metadata.
 var (
 	StateEventKind             = reflect.TypeOf(StateEvent{}).Name()

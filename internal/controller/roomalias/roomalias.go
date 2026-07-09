@@ -19,7 +19,7 @@ package roomalias
 import (
 	"context"
 	"github.com/crossplane-contrib/provider-matrix/apis/roomalias/v1alpha1"
-	"github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
+	apisv1beta1 "github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
 	"github.com/crossplane-contrib/provider-matrix/internal/clients"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
@@ -30,7 +30,7 @@ import (
 	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"time"
 )
