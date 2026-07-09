@@ -90,6 +90,7 @@ jobs:
       - name: Check Diff
         run: |
           make reviewable
+          go mod tidy && git checkout go.mod go.sum
           git diff --exit-code
 
   unit-tests:
