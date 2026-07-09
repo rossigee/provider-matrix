@@ -20,7 +20,7 @@ import (
 	"github.com/crossplane-contrib/provider-matrix/apis/user/v1alpha1"
 	"github.com/crossplane-contrib/provider-matrix/internal/clients"
 	"github.com/stretchr/testify/assert"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"testing"
 	"time"
 )

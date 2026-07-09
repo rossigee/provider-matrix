@@ -17,23 +17,9 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"reflect"
-)
 
-// Package type metadata.
-const (
-	Group   = "powerlevel.matrix.crossplane.io"
-	Version = "v1alpha1"
-)
-
-var (
-	// SchemeGroupVersion is group version used to register these objects
-	SchemeGroupVersion = schema.GroupVersion{Group: Group, Version: Version}
-
-	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
-	SchemeBuilder = runtime.NewSchemeBuilder(addKnownTypes)
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 // PowerLevel type metadata.
@@ -43,12 +29,3 @@ var (
 	PowerLevelKindAPIVersion   = PowerLevelKind + "." + SchemeGroupVersion.String()
 	PowerLevelGroupVersionKind = SchemeGroupVersion.WithKind(PowerLevelKind)
 )
-
-// AddToScheme adds all types of this group into the given scheme.
-func addKnownTypes(s *runtime.Scheme) error {
-	return nil
-}
-
-func AddToScheme(s *runtime.Scheme) error {
-	return SchemeBuilder.AddToScheme(s)
-}

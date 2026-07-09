@@ -17,8 +17,8 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"github.com/crossplane/crossplane/apis/v2/core/v2"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -45,7 +45,7 @@ type RoomParameters struct {
 	Visibility *string `json:"visibility,omitempty"`
 
 	// RoomVersion specifies the Matrix room version to use
-	// +kubebuilder:validation:Pattern="^[0-9]+$|^[0-9]+\.[0-9]+$"
+	// +kubebuilder:validation:Pattern="^[0-9]+$|^[0-9]+.[0-9]+$"
 	RoomVersion *string `json:"roomVersion,omitempty"`
 
 	// CreationContent is additional content for the m.room.create event
@@ -203,7 +203,7 @@ type RoomStatus struct {
 // A Room is a managed resource that represents a Matrix Room
 // +kubebuilder:printcolumn:name="READY",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // +kubebuilder:printcolumn:name="SYNCED",type="string",JSONPath=".status.conditions[?(@.type=='Synced')].status"
-// +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane\\.io/external-name"
+// +kubebuilder:printcolumn:name="EXTERNAL-NAME",type="string",JSONPath=".metadata.annotations.crossplane.io/external-name"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Cluster,categories={crossplane,managed,matrix}

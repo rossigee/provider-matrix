@@ -14,18 +14,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+// Package v1alpha1 contains the v1alpha1 group roomalias.matrix.crossplane.io resources of the provider.
+// +kubebuilder:object:generate=true
+// +groupName=roomalias.matrix.crossplane.io
+// +versionName=v1alpha1
 package v1alpha1
 
 import (
-	"reflect"
-
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-// StateEvent type metadata.
-var (
-	StateEventKind             = reflect.TypeOf(StateEvent{}).Name()
-	StateEventGroupKind        = schema.GroupKind{Group: Group, Kind: StateEventKind}
-	StateEventKindAPIVersion   = StateEventKind + "." + SchemeGroupVersion.String()
-	StateEventGroupVersionKind = SchemeGroupVersion.WithKind(StateEventKind)
+const (
+	Group   = "roomalias.matrix.crossplane.io"
+	Version = "v1alpha1"
 )
+
+var (
+	SchemeGroupVersion = schema.GroupVersion{Group: Group, Version: Version}
+	SchemeBuilder      = runtime.NewSchemeBuilder(addKnownTypes)
+	AddToScheme        = SchemeBuilder.AddToScheme
+)
+
+func addKnownTypes(s *runtime.Scheme) error {
+	s.AddKnownTypes(SchemeGroupVersion,
+		&RoomAlias{},
+		&RoomAliasList{},
+	)
+	return nil
+}

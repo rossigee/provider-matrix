@@ -17,38 +17,15 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"reflect"
+
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-// Package type metadata.
-const (
-	Group   = "user.matrix.crossplane.io"
-	Version = "v1alpha1"
-)
-
+// ExternalID type metadata.
 var (
-	// SchemeGroupVersion is group version used to register these objects
-	SchemeGroupVersion = schema.GroupVersion{Group: Group, Version: Version}
-
-	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
-	SchemeBuilder = runtime.NewSchemeBuilder(addKnownTypes)
+	ExternalIDKind             = reflect.TypeOf(ExternalID{}).Name()
+	ExternalIDGroupKind        = schema.GroupKind{Group: Group, Kind: ExternalIDKind}
+	ExternalIDKindAPIVersion   = ExternalIDKind + "." + SchemeGroupVersion.String()
+	ExternalIDGroupVersionKind = SchemeGroupVersion.WithKind(ExternalIDKind)
 )
-
-// User type metadata.
-var (
-	UserKind             = reflect.TypeOf(User{}).Name()
-	UserGroupKind        = schema.GroupKind{Group: Group, Kind: UserKind}
-	UserKindAPIVersion   = UserKind + "." + SchemeGroupVersion.String()
-	UserGroupVersionKind = SchemeGroupVersion.WithKind(UserKind)
-)
-
-// AddToScheme adds all types of this group into the given scheme.
-func addKnownTypes(s *runtime.Scheme) error {
-	return nil
-}
-
-func AddToScheme(s *runtime.Scheme) error {
-	return SchemeBuilder.AddToScheme(s)
-}

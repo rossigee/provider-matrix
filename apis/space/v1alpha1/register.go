@@ -17,38 +17,15 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"reflect"
+
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-// Package type metadata.
-const (
-	Group   = "space.matrix.crossplane.io"
-	Version = "v1alpha1"
-)
-
+// StateEvent type metadata.
 var (
-	// SchemeGroupVersion is group version used to register these objects
-	SchemeGroupVersion = schema.GroupVersion{Group: Group, Version: Version}
-
-	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
-	SchemeBuilder = runtime.NewSchemeBuilder(addKnownTypes)
+	StateEventKind             = reflect.TypeOf(StateEvent{}).Name()
+	StateEventGroupKind        = schema.GroupKind{Group: Group, Kind: StateEventKind}
+	StateEventKindAPIVersion   = StateEventKind + "." + SchemeGroupVersion.String()
+	StateEventGroupVersionKind = SchemeGroupVersion.WithKind(StateEventKind)
 )
-
-// Space type metadata.
-var (
-	SpaceKind             = reflect.TypeOf(Space{}).Name()
-	SpaceGroupKind        = schema.GroupKind{Group: Group, Kind: SpaceKind}
-	SpaceKindAPIVersion   = SpaceKind + "." + SchemeGroupVersion.String()
-	SpaceGroupVersionKind = SchemeGroupVersion.WithKind(SpaceKind)
-)
-
-// AddToScheme adds all types of this group into the given scheme.
-func addKnownTypes(s *runtime.Scheme) error {
-	return nil
-}
-
-func AddToScheme(s *runtime.Scheme) error {
-	return SchemeBuilder.AddToScheme(s)
-}
