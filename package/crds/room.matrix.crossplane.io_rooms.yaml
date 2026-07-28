@@ -1,0 +1,441 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.21.0
+  name: rooms.room.matrix.crossplane.io
+spec:
+  group: room.matrix.crossplane.io
+  names:
+    categories:
+    - crossplane
+    - managed
+    - matrix
+    kind: Room
+    listKind: RoomList
+    plural: rooms
+    singular: room
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.type=='Ready')].status
+      name: READY
+      type: string
+    - jsonPath: .status.conditions[?(@.type=='Synced')].status
+      name: SYNCED
+      type: string
+    - jsonPath: .metadata.annotations.crossplane.io/external-name
+      name: EXTERNAL-NAME
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: A Room is a managed resource that represents a Matrix Room
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: A RoomSpec defines the desired state of a Room.
+            properties:
+              forProvider:
+                description: RoomParameters define the desired state of a Matrix Room
+                properties:
+                  alias:
+                    description: 'Alias is the room alias (e.g., #example:matrix.org)'
+                    pattern: ^#[a-zA-Z0-9._=/-]+:[a-zA-Z0-9.-]+$
+                    type: string
+                  avatarURL:
+                    description: AvatarURL is the room's avatar image URL (mxc://
+                      URL)
+                    pattern: ^mxc://.*
+                    type: string
+                  creationContent:
+                    description: CreationContent is additional content for the m.room.create
+                      event
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                  encryptionEnabled:
+                    default: false
+                    description: EncryptionEnabled indicates if the room should be
+                      encrypted
+                    type: boolean
+                  guestAccess:
+                    default: forbidden
+                    description: GuestAccess controls whether guests can join the
+                      room
+                    enum:
+                    - can_join
+                    - forbidden
+                    type: string
+                  historyVisibility:
+                    default: shared
+                    description: HistoryVisibility controls message history visibility
+                    enum:
+                    - invited
+                    - joined
+                    - shared
+                    - world_readable
+                    type: string
+                  initialState:
+                    description: InitialState is a list of state events to set in
+                      the new room
+                    items:
+                      description: StateEvent represents a Matrix state event
+                      properties:
+                        content:
+                          description: Content is the event content
+                          type: object
+                          x-kubernetes-preserve-unknown-fields: true
+                        stateKey:
+                          description: StateKey is the state key for the event
+                          type: string
+                        type:
+                          description: Type is the event type
+                          type: string
+                      required:
+                      - content
+                      - stateKey
+                      - type
+                      type: object
+                    type: array
+                  invite:
+                    description: Invite is a list of user IDs to invite to the room
+                    items:
+                      type: string
+                    type: array
+                  joinRules:
+                    default: invite
+                    description: JoinRules controls who can join the room
+                    enum:
+                    - public
+                    - invite
+                    - restricted
+                    - knock
+                    type: string
+                  name:
+                    description: Name is the human-readable name for the room
+                    type: string
+                  powerLevelOverrides:
+                    description: PowerLevelOverrides allows customizing power levels
+                      for the room
+                    properties:
+                      ban:
+                        description: Ban is the power level required to ban users
+                        type: integer
+                      events:
+                        additionalProperties:
+                          type: integer
+                        description: Events maps event types to required power levels
+                        type: object
+                      eventsDefault:
+                        description: EventsDefault is the default power level for
+                          events
+                        type: integer
+                      invite:
+                        description: Invite is the power level required to invite
+                          users
+                        type: integer
+                      kick:
+                        description: Kick is the power level required to kick users
+                        type: integer
+                      redact:
+                        description: Redact is the power level required to redact
+                          events
+                        type: integer
+                      stateDefault:
+                        description: StateDefault is the default power level for state
+                          events
+                        type: integer
+                      users:
+                        additionalProperties:
+                          type: integer
+                        description: Users maps user IDs to their power levels
+                        type: object
+                      usersDefault:
+                        description: UsersDefault is the default power level for users
+                        type: integer
+                    type: object
+                  preset:
+                    default: private_chat
+                    description: Preset determines the room's configuration template
+                    enum:
+                    - private_chat
+                    - public_chat
+                    - trusted_private_chat
+                    type: string
+                  roomVersion:
+                    description: RoomVersion specifies the Matrix room version to
+                      use
+                    pattern: ^[0-9]+$|^[0-9]+.[0-9]+$
+                    type: string
+                  topic:
+                    description: Topic is the topic/description for the room
+                    type: string
+                  visibility:
+                    default: private
+                    description: Visibility controls room visibility in the directory
+                    enum:
+                    - public
+                    - private
+                    type: string
+                type: object
+              managementPolicies:
+                default:
+                - '*'
+                description: |-
+                  THIS IS A BETA FIELD. It is on by default but can be opted out
+                  through a Crossplane feature flag.
+                  ManagementPolicies specify the array of actions Crossplane is allowed to
+                  take on the managed and external resources.
+                  See the design doc for more information: https://github.com/crossplane/crossplane/blob/499895a25d1a1a0ba1604944ef98ac7a1a71f197/design/design-doc-observe-only-resources.md?plain=1#L223
+                  and this one: https://github.com/crossplane/crossplane/blob/444267e84783136daa93568b364a5f01228cacbe/design/one-pager-ignore-changes.md
+                items:
+                  description: |-
+                    A ManagementAction represents an action that the Crossplane controllers
+                    can take on an external resource.
+                  enum:
+                  - Observe
+                  - Create
+                  - Update
+                  - Delete
+                  - LateInitialize
+                  - '*'
+                  type: string
+                type: array
+              providerConfigRef:
+                default:
+                  kind: ClusterProviderConfig
+                  name: default
+                description: |-
+                  ProviderConfigReference specifies how the provider that will be used to
+                  create, observe, update, and delete this managed resource should be
+                  configured.
+                properties:
+                  kind:
+                    description: Kind of the referenced object.
+                    type: string
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                required:
+                - kind
+                - name
+                type: object
+              writeConnectionSecretToRef:
+                description: |-
+                  WriteConnectionSecretToReference specifies the namespace and name of a
+                  Secret to which any connection details for this managed resource should
+                  be written. Connection details frequently include the endpoint, username,
+                  and password required to connect to the managed resource.
+                properties:
+                  name:
+                    description: Name of the secret.
+                    type: string
+                required:
+                - name
+                type: object
+            required:
+            - forProvider
+            type: object
+          status:
+            description: A RoomStatus represents the observed state of a Room.
+            properties:
+              atProvider:
+                description: RoomObservation reflects the observed state of a Matrix
+                  Room
+                properties:
+                  alias:
+                    description: Alias is the canonical room alias
+                    type: string
+                  avatarURL:
+                    description: AvatarURL is the current room avatar URL
+                    type: string
+                  creationTime:
+                    description: CreationTime is when the room was created
+                    format: date-time
+                    type: string
+                  creator:
+                    description: Creator is the user ID of the room creator
+                    type: string
+                  encryptionEnabled:
+                    description: EncryptionEnabled indicates if the room is encrypted
+                    type: boolean
+                  guestAccess:
+                    description: GuestAccess is the current guest access setting
+                    type: string
+                  historyVisibility:
+                    description: HistoryVisibility is the current history visibility
+                      setting
+                    type: string
+                  invitedMembers:
+                    description: InvitedMembers is the number of invited members
+                    type: integer
+                  joinRules:
+                    description: JoinRules is the current join rules setting
+                    type: string
+                  joinedMembers:
+                    description: JoinedMembers is the number of joined members
+                    type: integer
+                  name:
+                    description: Name is the current room name
+                    type: string
+                  powerLevels:
+                    description: PowerLevels contains current power level settings
+                    properties:
+                      ban:
+                        description: Ban is the power level required to ban users
+                        type: integer
+                      events:
+                        additionalProperties:
+                          type: integer
+                        description: Events maps event types to required power levels
+                        type: object
+                      eventsDefault:
+                        description: EventsDefault is the default power level for
+                          events
+                        type: integer
+                      invite:
+                        description: Invite is the power level required to invite
+                          users
+                        type: integer
+                      kick:
+                        description: Kick is the power level required to kick users
+                        type: integer
+                      redact:
+                        description: Redact is the power level required to redact
+                          events
+                        type: integer
+                      stateDefault:
+                        description: StateDefault is the default power level for state
+                          events
+                        type: integer
+                      users:
+                        additionalProperties:
+                          type: integer
+                        description: Users maps user IDs to their power levels
+                        type: object
+                      usersDefault:
+                        description: UsersDefault is the default power level for users
+                        type: integer
+                    type: object
+                  roomID:
+                    description: RoomID is the Matrix room ID
+                    type: string
+                  roomVersion:
+                    description: RoomVersion is the room version
+                    type: string
+                  state:
+                    description: State contains current room state events
+                    items:
+                      description: StateEvent represents a Matrix state event
+                      properties:
+                        content:
+                          description: Content is the event content
+                          type: object
+                          x-kubernetes-preserve-unknown-fields: true
+                        stateKey:
+                          description: StateKey is the state key for the event
+                          type: string
+                        type:
+                          description: Type is the event type
+                          type: string
+                      required:
+                      - content
+                      - stateKey
+                      - type
+                      type: object
+                    type: array
+                  topic:
+                    description: Topic is the current room topic
+                    type: string
+                  visibility:
+                    description: Visibility is the current room visibility
+                    type: string
+                type: object
+              conditions:
+                description: Conditions of the resource.
+                items:
+                  description: A Condition that may apply to a resource.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        LastTransitionTime is the last time this condition transitioned from one
+                        status to another.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        A Message containing details about this condition's last transition from
+                        one status to another, if any.
+                      type: string
+                    observedGeneration:
+                      description: |-
+                        ObservedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
+                      format: int64
+                      type: integer
+                    reason:
+                      description: A Reason for this condition's last transition from
+                        one status to another.
+                      type: string
+                    status:
+                      description: Status of this condition; is it currently True,
+                        False, or Unknown?
+                      type: string
+                    type:
+                      description: |-
+                        Type of this condition. At most one of each condition type may apply to
+                        a resource at any point in time.
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
+              lastHandledReconcileAt:
+                description: |-
+                  LastHandledReconcileAt holds the value of the most recent
+                  reconcile-requested-at annotation token that the controller has
+                  processed. Users can compare this to the annotation to determine
+                  whether a reconcile request has been handled.
+                type: string
+              observedGeneration:
+                description: |-
+                  ObservedGeneration is the latest metadata.generation
+                  which resulted in either a ready state, or stalled due to error
+                  it can not recover from without human intervention.
+                format: int64
+                type: integer
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
