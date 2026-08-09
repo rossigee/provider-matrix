@@ -28,12 +28,6 @@ jobs:
           fetch-depth: 0
           submodules: true
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          generate_release_notes: true
-          prerelease: false
-
       - name: Determine Version
         id: version
         run: |
@@ -144,7 +138,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Release ${{ steps.version.outputs.version }}
+          name: Release ${{ env.VERSION }}
           draft: false
           prerelease: false
           generate_release_notes: true
@@ -167,8 +161,5 @@ jobs:
             echo "   Digest: ${DIGEST}"
           else
             echo "❌ Failed to pull container image ${VERSION}"
-            exit 1
-          fi
-            echo "❌ Version and latest tags point to different images"
             exit 1
           fi

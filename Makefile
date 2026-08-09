@@ -12,6 +12,7 @@ export TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX := https://github.com/rossigee/ter
 export TERRAFORM_NATIVE_PROVIDER_BINARY := terraform-provider-matrix_v$(TERRAFORM_PROVIDER_VERSION)
 
 PLATFORMS ?= linux_amd64 linux_arm64
+GO_REQUIRED_VERSION ?= 1.26.5
 
 # Test targets - Override build system test target before includes
 # to avoid controller compilation issues

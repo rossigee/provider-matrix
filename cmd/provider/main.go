@@ -18,16 +18,18 @@ package main
 
 import (
 	"context"
+	"os"
+	"path/filepath"
+	"runtime"
+	"time"
+
 	"github.com/crossplane-contrib/provider-matrix/apis"
 	"github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
-	"github.com/crossplane-contrib/provider-matrix/internal/controller/powerlevel"
-	"github.com/crossplane-contrib/provider-matrix/internal/controller/room"
-	"github.com/crossplane-contrib/provider-matrix/internal/controller/roomalias"
-	"github.com/crossplane-contrib/provider-matrix/internal/controller/user"
+	"github.com/crossplane-contrib/provider-matrix/internal/controller"
 	"github.com/crossplane-contrib/provider-matrix/internal/features"
 	"github.com/crossplane-contrib/provider-matrix/internal/tracing"
 	"github.com/crossplane-contrib/provider-matrix/internal/version"
-	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
+	xpcontroller "github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/feature"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
@@ -36,14 +38,10 @@ import (
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/leaderelection/resourcelock"
-	"os"
-	"path/filepath"
-	"runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
-	"time"
 )
 
 func main() {
@@ -64,12 +62,8 @@ func main() {
 
 	shutdownTracing := tracing.Init("provider-matrix")
 	defer shutdownTracing(context.Background())
-	if *debug {
-		// The controller-runtime runs with a no-op logger by default. It is
-		// *very* verbose even at info level, so we only provide it a real
-		// logger when we're running in debug mode.
-		ctrl.SetLogger(zl)
-	}
+	// Always set the controller-runtime logger to prevent logging errors
+	ctrl.SetLogger(zl)
 
 	log.Info("Provider starting up",
 		"provider", "provider-matrix",
@@ -88,7 +82,7 @@ func main() {
 	kingpin.FatalIfError(err, "Cannot get API server rest config")
 
 	// Feature flags
-	o := controller.Options{
+	o := xpcontroller.Options{
 		Logger:                  log,
 		MaxConcurrentReconciles: *maxReconcileRate,
 		PollInterval:            *pollInterval,
@@ -119,10 +113,7 @@ func main() {
 		log.Debug("Cannot create default ProviderConfig", "error", err)
 	}
 
-	kingpin.FatalIfError(user.Setup(mgr, o), "Cannot setup User controller")
-	kingpin.FatalIfError(room.Setup(mgr, o), "Cannot setup Room controller")
-	kingpin.FatalIfError(powerlevel.Setup(mgr, o), "Cannot setup PowerLevel controller")
-	kingpin.FatalIfError(roomalias.Setup(mgr, o), "Cannot setup RoomAlias controller")
+	kingpin.FatalIfError(controller.Setup(mgr, o), "Cannot setup controllers")
 
 	kingpin.FatalIfError(mgr.AddHealthzCheck("healthz", healthz.Ping), "Cannot add health check")
 	kingpin.FatalIfError(mgr.AddReadyzCheck("readyz", healthz.Ping), "Cannot add ready check")
