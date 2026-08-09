@@ -52,15 +52,11 @@ GO111MODULE = on
 
 UP_VERSION = v0.24.1
 UP_CHANNEL = stable
-UP := $(TOOLS_HOST_DIR)/up-$(UP_VERSION)
 UPTEST_VERSION = v0.8.1
 -include build/makelib/k8s_tools.mk
 
-# UP tool download rule
-$(UP):
-	@mkdir -p $(TOOLS_HOST_DIR)
-	@curl -fsSLo $(UP) https://releases.upbound.io/$(UP_CHANNEL)/$(UP_VERSION)/bin/$(SAFEHOSTPLATFORM)/up || exit 1
-	@chmod +x $(UP)
+# Override build.init to be a no-op since UP is not used in the build process
+build.init: ; @:
 
 # ====================================================================================
 # Setup Images
