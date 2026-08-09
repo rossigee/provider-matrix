@@ -52,8 +52,15 @@ GO111MODULE = on
 
 UP_VERSION = v0.24.1
 UP_CHANNEL = stable
+UP := $(TOOLS_HOST_DIR)/up-$(UP_VERSION)
 UPTEST_VERSION = v0.8.1
 -include build/makelib/k8s_tools.mk
+
+# UP tool download rule
+$(UP):
+	@mkdir -p $(TOOLS_HOST_DIR)
+	@curl -fsSLo $(UP) https://releases.upbound.io/$(UP_CHANNEL)/$(UP_VERSION)/bin/$(SAFEHOSTPLATFORM)/up || exit 1
+	@chmod +x $(UP)
 
 # ====================================================================================
 # Setup Images
@@ -92,6 +99,9 @@ fallback: submodules
 # NOTE(hasheddan): we force image building to happen prior to xpkg build so that
 # we ensure image is present in daemon.
 xpkg.build.provider-matrix: do.build.images
+
+# Ensure CROSSPLANE_CLI is available before publishing XPKG artifacts
+xpkg.release.publish.%: $(CROSSPLANE_CLI)
 
 # Ensure publish only happens on release branches
 publish.artifacts:
