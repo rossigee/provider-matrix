@@ -97,7 +97,10 @@ jobs:
         run: go mod vendor
 
       - name: Install Build Tools
-        run: make build.init
+        run: |
+          mkdir -p .cache/tools/linux_x86_64
+          curl -fsSLo .cache/tools/linux_x86_64/crossplane-cli-v2.3.3 https://releases.crossplane.io/stable/v2.3.3/bin/linux_amd64/crank
+          chmod +x .cache/tools/linux_x86_64/crossplane-cli-v2.3.3
 
       - name: Determine Version
         run: |
