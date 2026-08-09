@@ -108,9 +108,6 @@ publish.artifacts:
 	$(foreach r,$(XPKG_REG_ORGS), $(foreach x,$(XPKGS),@$(MAKE) xpkg.release.publish.$(r).$(x)))
 	$(foreach r,$(REGISTRY_ORGS), $(foreach i,$(IMAGES),@$(MAKE) img.release.publish.$(r).$(i)))
 
-# NOTE(hasheddan): we ensure up is installed prior to running platform-specific
-# build steps in parallel to avoid encountering an installation race condition.
-build.init: $(UP)
 
 # ====================================================================================
 # Setup Terraform for fetching provider schema
