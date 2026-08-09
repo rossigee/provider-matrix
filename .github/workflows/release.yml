@@ -93,6 +93,12 @@ jobs:
         with:
           go-version: '1.26.5'
 
+      - name: Download XPKG Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: xpkg
+          path: _output/xpkg/linux_amd64
+
       - name: Vendor Dependencies
         run: go mod vendor
 
