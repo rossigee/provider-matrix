@@ -25,7 +25,19 @@ This provider supports the following Matrix resources:
 - **PowerLevel** (`powerlevel.matrix.crossplane.io`) - Configure granular permissions and power levels within rooms
 - **RoomAlias** (`roomalias.matrix.crossplane.io`) - Create human-readable aliases for Matrix rooms
 
-## Quick Start
+## Resource Types
+
+All resources are cluster-scoped (`v1alpha1`, no `.m.` namespaced group).
+
+| Resource | API Group | Description |
+|----------|-----------|-------------|
+| User | `user.matrix.crossplane.io` | Matrix users with profiles, admin privileges, devices |
+| Room | `room.matrix.crossplane.io` | Matrix rooms with settings, encryption, access controls |
+| Space | `space.matrix.crossplane.io` | Hierarchical organization of rooms |
+| PowerLevel | `powerlevel.matrix.crossplane.io` | Granular permissions within rooms |
+| RoomAlias | `roomalias.matrix.crossplane.io` | Human-readable aliases for rooms |
+
+## Getting Started
 
 ### Install the Provider
 
