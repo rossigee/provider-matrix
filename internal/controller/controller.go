@@ -18,17 +18,30 @@ limitations under the License.
 package controller
 
 import (
-	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
+	"context"
+
 	"github.com/crossplane-contrib/provider-matrix/internal/controller/powerlevel"
 	"github.com/crossplane-contrib/provider-matrix/internal/controller/providerconfig"
 	"github.com/crossplane-contrib/provider-matrix/internal/controller/room"
 	"github.com/crossplane-contrib/provider-matrix/internal/controller/roomalias"
 	"github.com/crossplane-contrib/provider-matrix/internal/controller/user"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
+	rbacv1 "k8s.io/api/rbac/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // Setup sets up all controllers for the Matrix provider.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
+	// Providers self-manage their RBAC (system role + binding) using a minimal
+	// base grant. This removes the need for per-revision pinned static roles.
+	if err := setupRBAC(mgr.GetClient(), o.Logger); err != nil {
+		o.Logger.Info("RBAC setup warning (may be transient)", "error", err)
+	}
+
 	if err := providerconfig.Setup(mgr); err != nil {
 		return err
 	}
@@ -45,4 +58,140 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		return err
 	}
 	return nil
+}
+
+// setupRBAC ensures stable named RBAC roles+bindings for the provider.
+// The SA must have a base selfmanage grant that includes both meta perms on
+// clusterroles/bindings and the actual resource verbs (to pass K8s escalation check).
+func setupRBAC(c client.Client, l logging.Logger) error {
+	ctx := context.Background()
+
+	rules := []rbacv1.PolicyRule{
+		{
+			APIGroups: []string{"powerlevel.matrix.crossplane.io"},
+			Resources: []string{"powerlevels", "powerlevels/status"},
+			Verbs:     []string{"get", "list", "watch", "update", "patch", "create"},
+		},
+		{
+			APIGroups: []string{"matrix.crossplane.io"},
+			Resources: []string{"providerconfigs", "providerconfigs/status", "providerconfigusages", "providerconfigusages/status"},
+			Verbs:     []string{"get", "list", "watch", "update", "patch", "create"},
+		},
+		{
+			APIGroups: []string{"roomalias.matrix.crossplane.io"},
+			Resources: []string{"roomaliases", "roomaliases/status"},
+			Verbs:     []string{"get", "list", "watch", "update", "patch", "create"},
+		},
+		{
+			APIGroups: []string{"room.matrix.crossplane.io"},
+			Resources: []string{"rooms", "rooms/status"},
+			Verbs:     []string{"get", "list", "watch", "update", "patch", "create"},
+		},
+		{
+			APIGroups: []string{"space.matrix.crossplane.io"},
+			Resources: []string{"spaces", "spaces/status"},
+			Verbs:     []string{"get", "list", "watch", "update", "patch", "create"},
+		},
+		{
+			APIGroups: []string{"user.matrix.crossplane.io"},
+			Resources: []string{"users", "users/status"},
+			Verbs:     []string{"get", "list", "watch", "update", "patch", "create"},
+		},
+		{
+			APIGroups: []string{"powerlevel.matrix.crossplane.io", "matrix.crossplane.io", "roomalias.matrix.crossplane.io", "room.matrix.crossplane.io", "space.matrix.crossplane.io", "user.matrix.crossplane.io"},
+			Resources: []string{"*/finalizers"},
+			Verbs:     []string{"update"},
+		},
+		{
+			APIGroups: []string{"", "coordination.k8s.io"},
+			Resources: []string{"secrets", "configmaps", "events", "leases"},
+			Verbs:     []string{"*"},
+		},
+	}
+
+	// System role (bound to the provider's SA)
+	system := &rbacv1.ClusterRole{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "crossplane:provider:provider-matrix:system",
+			Labels: map[string]string{
+				"rbac.crossplane.io/system": "provider-matrix",
+			},
+		},
+		Rules: rules,
+	}
+	if err := c.Create(ctx, system); err != nil && !errors.IsAlreadyExists(err) {
+		return err
+	}
+	if err := c.Update(ctx, system); err != nil {
+		l.Info("system role update", "err", err)
+	}
+
+	// Binding for the system role
+	binding := &rbacv1.ClusterRoleBinding{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "crossplane:provider:provider-matrix:system",
+		},
+		RoleRef: rbacv1.RoleRef{
+			APIGroup: "rbac.authorization.k8s.io",
+			Kind:     "ClusterRole",
+			Name:     "crossplane:provider:provider-matrix:system",
+		},
+		Subjects: []rbacv1.Subject{{
+			Kind:      "ServiceAccount",
+			Name:      "provider-matrix",
+			Namespace: "crossplane-system",
+		}},
+	}
+	if err := c.Create(ctx, binding); err != nil && !errors.IsAlreadyExists(err) {
+		return err
+	}
+	if err := c.Update(ctx, binding); err != nil {
+		l.Info("system binding update", "err", err)
+	}
+
+	// Aggregate-to-edit (best effort)
+	edit := &rbacv1.ClusterRole{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "crossplane:provider:provider-matrix:aggregate-to-edit",
+			Labels: map[string]string{
+				"rbac.crossplane.io/aggregate-to-edit":       "true",
+				"rbac.crossplane.io/aggregate-to-admin":      "true",
+				"rbac.crossplane.io/aggregate-to-crossplane": "true",
+				"rbac.crossplane.io/system":                  "provider-matrix",
+			},
+		},
+		Rules: withVerbs(rules, []string{"*"}),
+	}
+	if err := c.Create(ctx, edit); err != nil && !errors.IsAlreadyExists(err) {
+		l.Info("aggregate-to-edit create warning (non-fatal)", "err", err)
+	}
+	_ = c.Update(ctx, edit)
+
+	// Aggregate-to-view (best effort)
+	view := &rbacv1.ClusterRole{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "crossplane:provider:provider-matrix:aggregate-to-view",
+			Labels: map[string]string{
+				"rbac.crossplane.io/aggregate-to-view": "true",
+				"rbac.crossplane.io/system":            "provider-matrix",
+			},
+		},
+		Rules: withVerbs(rules, []string{"get", "list", "watch"}),
+	}
+	if err := c.Create(ctx, view); err != nil && !errors.IsAlreadyExists(err) {
+		l.Info("aggregate-to-view create warning (non-fatal)", "err", err)
+	}
+	_ = c.Update(ctx, view)
+
+	l.Info("provider self-managed RBAC roles ensured")
+	return nil
+}
+
+func withVerbs(r []rbacv1.PolicyRule, verbs []string) []rbacv1.PolicyRule {
+	out := make([]rbacv1.PolicyRule, len(r))
+	for i := range r {
+		out[i] = r[i]
+		out[i].Verbs = verbs
+	}
+	return out
 }
