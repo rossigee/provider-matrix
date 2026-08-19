@@ -18,10 +18,11 @@ package test
 
 import (
 	"context"
+	"testing"
+
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 // MockDeleteRoomClient for testing advanced room deletion with options
@@ -136,15 +137,13 @@ func TestDeleteRoomWithMultipleOptions(t *testing.T) {
 func TestDeleteRoomInvalidOptions(t *testing.T) {
 	mockClient := &MockDeleteRoomClient{
 		deleteRoomWithOptionsFn: func(ctx context.Context, roomID string, options map[string]interface{}) error {
-			if options != nil {
-				for key := range options {
-					// Validate option names
-					switch key {
-					case "purge", "kick_users", "block":
-						continue
-					default:
-						return errors.New("invalid option: " + key)
-					}
+			for key := range options {
+				// Validate option names
+				switch key {
+				case "purge", "kick_users", "block":
+					continue
+				default:
+					return errors.New("invalid option: " + key)
 				}
 			}
 			return nil

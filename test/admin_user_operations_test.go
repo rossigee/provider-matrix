@@ -18,11 +18,12 @@ package test
 
 import (
 	"context"
+	"testing"
+
 	"github.com/crossplane-contrib/provider-matrix/internal/clients"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 // MockAdminUserClient for testing admin-specific user operations

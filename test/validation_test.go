@@ -17,8 +17,9 @@ limitations under the License.
 package test
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // TestValidateMatrixID tests Matrix ID validation logic
@@ -302,7 +303,9 @@ func validateTestMatrixID(id string) bool {
 
 	// Validate characters - only alphanumeric, underscore, hyphen, dot, colon (for port)
 	for _, ch := range localPart {
-		if !((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_' || ch == '.' || ch == '-') {
+		isLower := ch >= 'a' && ch <= 'z'
+		isDigit := ch >= '0' && ch <= '9'
+		if !isLower && !isDigit && ch != '_' && ch != '.' && ch != '-' {
 			return false
 		}
 	}

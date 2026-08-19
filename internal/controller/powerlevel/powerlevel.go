@@ -18,6 +18,8 @@ package powerlevel
 
 import (
 	"context"
+	"time"
+
 	"github.com/crossplane-contrib/provider-matrix/apis/powerlevel/v1alpha1"
 	apisv1beta1 "github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
 	"github.com/crossplane-contrib/provider-matrix/internal/clients"
@@ -32,7 +34,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"time"
 )
 
 const (

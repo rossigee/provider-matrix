@@ -17,12 +17,12 @@ limitations under the License.
 package user
 
 import (
+	"testing"
+	"time"
+
 	"github.com/crossplane-contrib/provider-matrix/apis/user/v1alpha1"
 	"github.com/crossplane-contrib/provider-matrix/internal/clients"
 	"github.com/stretchr/testify/assert"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"testing"
-	"time"
 )
 
 func TestGenerateUserSpec(t *testing.T) {
@@ -202,8 +202,4 @@ func stringPtr(s string) *string {
 
 func boolPtr(b bool) *bool {
 	return &b
-}
-
-func timePtr(t time.Time) *metav1.Time {
-	return &metav1.Time{Time: t}
 }

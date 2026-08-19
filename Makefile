@@ -4,19 +4,13 @@
 PROJECT_NAME := provider-matrix
 PROJECT_REPO := github.com/crossplane-contrib/$(PROJECT_NAME)
 
-export TERRAFORM_VERSION := 1.5.7
-export TERRAFORM_PROVIDER_SOURCE := hashicorp/matrix
-export TERRAFORM_PROVIDER_VERSION := 0.0.1
-export TERRAFORM_PROVIDER_DOWNLOAD_NAME := terraform-provider-matrix
-export TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX := https://github.com/rossigee/terraform-provider-matrix/releases/download/v$(TERRAFORM_PROVIDER_VERSION)
-export TERRAFORM_NATIVE_PROVIDER_BINARY := terraform-provider-matrix_v$(TERRAFORM_PROVIDER_VERSION)
-
 PLATFORMS ?= linux_amd64 linux_arm64
-GO_REQUIRED_VERSION ?= 1.26.5
+GO_REQUIRED_VERSION ?= 1.26.6
 
-# Test targets - Override build system test target before includes
-# to avoid controller compilation issues
-test: test.unit test.clients test.integration test.simple test.coverage
+# Test targets - composes the curated subset actually run on every commit.
+# The build submodule's `test` chain runs `./...`, which we deliberately
+# narrow here because make targets below already cover the rest.
+test: test.unit test.clients test.controller test.integration test.simple test.coverage
 	@echo "✓ All tests completed successfully"
 
 # -include will silently skip missing files, which allows us
@@ -108,35 +102,6 @@ publish.artifacts:
 	$(foreach r,$(XPKG_REG_ORGS), $(foreach x,$(XPKGS),@$(MAKE) xpkg.release.publish.$(r).$(x)))
 	$(foreach r,$(REGISTRY_ORGS), $(foreach i,$(IMAGES),@$(MAKE) img.release.publish.$(r).$(i)))
 
-
-# ====================================================================================
-# Setup Terraform for fetching provider schema
-TERRAFORM := $(TOOLS_HOST_DIR)/terraform-$(TERRAFORM_VERSION)
-TERRAFORM_WORKDIR := $(WORK_DIR)/terraform
-TERRAFORM_PROVIDER_SCHEMA := config/schema.json
-
-$(TERRAFORM):
-	@$(INFO) installing terraform $(HOSTOS)-$(HOSTARCH)
-	@mkdir -p $(TOOLS_HOST_DIR)/tmp-terraform
-	@curl -fsSL https://releases.hashicorp.com/terraform/$(TERRAFORM_VERSION)/terraform_$(TERRAFORM_VERSION)_$(HOSTOS)_$(HOSTARCH).zip -o $(TOOLS_HOST_DIR)/tmp-terraform/terraform.zip
-	@unzip $(TOOLS_HOST_DIR)/tmp-terraform/terraform.zip -d $(TOOLS_HOST_DIR)/tmp-terraform
-	@mv $(TOOLS_HOST_DIR)/tmp-terraform/terraform $(TERRAFORM)
-	@rm -fr $(TOOLS_HOST_DIR)/tmp-terraform
-	@$(OK) installing terraform $(HOSTOS)-$(HOSTARCH)
-
-$(TERRAFORM_PROVIDER_SCHEMA): $(TERRAFORM)
-	@$(INFO) generating provider schema for $(TERRAFORM_PROVIDER_SOURCE) $(TERRAFORM_PROVIDER_VERSION)
-	@mkdir -p $(TERRAFORM_WORKDIR)
-	@echo 'terraform { required_providers { provider = { source = "$(TERRAFORM_PROVIDER_SOURCE)" } } }' > $(TERRAFORM_WORKDIR)/main.tf
-	@echo 'provider "provider" {}' >> $(TERRAFORM_WORKDIR)/main.tf
-	@$(TERRAFORM) -chdir=$(TERRAFORM_WORKDIR) init > $(TERRAFORM_WORKDIR)/terraform-logs.txt 2>&1
-	@$(TERRAFORM) -chdir=$(TERRAFORM_WORKDIR) providers schema -json=true > $(TERRAFORM_PROVIDER_SCHEMA) 2>> $(TERRAFORM_WORKDIR)/terraform-logs.txt
-	@$(OK) generating provider schema for $(TERRAFORM_PROVIDER_SOURCE) $(TERRAFORM_PROVIDER_VERSION)
-
-generate.init: $(TERRAFORM_PROVIDER_SCHEMA)
-
-.PHONY: $(TERRAFORM_PROVIDER_SCHEMA)
-
 # ====================================================================================
 # Targets
 
@@ -174,10 +139,6 @@ run: go.build
 	@# To see other arguments that can be provided, run the command with --help instead
 	$(GO_OUT_DIR)/provider --debug
 
-# NOTE(turkenh): Following target is for CI.
-generate: generate.init
-	@$(MAKE) generate.run
-
 # Individual test targets for components that can compile
 
 test.unit:
@@ -210,41 +171,4 @@ test.coverage:
 
 test.all: test.unit test.clients test.controller test.integration test.simple
 
-# Reviewable target that combines key checks for code review readiness
-# NOTE: Excludes controller vet/build checks due to known crossplane-runtime API compatibility issues
-reviewable: go.mod.tidy test.unit test.simple go.fmt go.vet.limited
-	@echo "✓ All reviewable checks passed"
-	@echo "  - go mod tidy: ✓"
-	@echo "  - unit tests: ✓"
-	@echo "  - simple tests: ✓"
-	@echo "  - go fmt: ✓"
-	@echo "  - go vet (APIs only): ✓"
-	@echo ""
-	@echo "⚠️  Note: Controllers excluded due to crossplane-runtime API compatibility issues"
-
-go.mod.tidy:
-	@echo "Running go mod tidy..."
-	@go mod tidy
-
-go.fmt:
-	@echo "Running go fmt..."
-	@go fmt ./...
-
-go.vet.limited:
-	@echo "Running go vet (APIs only)..."
-	@go vet ./apis/...
-
-# Custom lint target that only lints compilable code
-# This overrides the build system's lint target due to controller API incompatibilities
-lint:
-	@echo "Running custom lint (excludes controllers and cmd due to crossplane-runtime API issues)..."
-	@mkdir -p _output/lint || true
-	@if command -v golangci-lint >/dev/null 2>&1; then \
-		golangci-lint run ./apis/... ./internal/clients/... || (echo "Lint failed, but continuing due to known controller API issues" && true); \
-	else \
-		echo "golangci-lint not found, using go vet instead"; \
-		go vet ./apis/... ./internal/clients/... || (echo "Vet failed, but continuing" && true); \
-	fi
-	@echo "✓ Lint completed (controllers and cmd excluded due to API incompatibilities)"
-
-.PHONY: cobertura submodules fallback run generate test test.unit test.clients test.controller test.integration test.simple test.all test.working test.coverage reviewable go.mod.tidy go.fmt go.vet.limited lint
+.PHONY: cobertura submodules fallback run generate test test.unit test.clients test.controller test.integration test.simple test.all test.working test.coverage

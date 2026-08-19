@@ -19,15 +19,16 @@ package test
 import (
 	"context"
 	"fmt"
-	"github.com/crossplane-contrib/provider-matrix/internal/clients"
-	"github.com/pkg/errors"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
+
+	"github.com/crossplane-contrib/provider-matrix/internal/clients"
+	"github.com/pkg/errors"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // Priority 3: Real Matrix Server Integration Simulation
@@ -36,12 +37,11 @@ import (
 // MockRealServerClient simulates a real Matrix server with realistic behavior
 type MockRealServerClient struct {
 	// Server state
-	users  map[string]*clients.User
-	rooms  map[string]*clients.Room
-	mu     sync.RWMutex
-	delay  time.Duration // Network delay simulation
-	errFn  func(op string) error
-	closed bool
+	users map[string]*clients.User
+	rooms map[string]*clients.Room
+	mu    sync.RWMutex
+	delay time.Duration // Network delay simulation
+	errFn func(op string) error
 }
 
 func NewMockRealServerClient() *MockRealServerClient {
@@ -543,7 +543,7 @@ func TestLoadMixedOperations(t *testing.T) {
 
 	// Create initial data
 	for i := 0; i < 20; i++ {
-		client.CreateUser(context.Background(), &clients.UserSpec{
+		_, _ = client.CreateUser(context.Background(), &clients.UserSpec{
 			UserID: fmt.Sprintf("@mixed_%d:example.com", i),
 		})
 	}
@@ -554,8 +554,8 @@ func TestLoadMixedOperations(t *testing.T) {
 		userID := fmt.Sprintf("@mixed_%d:example.com", i%20)
 
 		// Create, read, update sequence
-		client.GetUser(context.Background(), userID)
-		client.UpdateUser(context.Background(), userID, &clients.UserSpec{
+		_, _ = client.GetUser(context.Background(), userID)
+		_, _ = client.UpdateUser(context.Background(), userID, &clients.UserSpec{
 			DisplayName: fmt.Sprintf("Updated %d", i),
 		})
 	}
@@ -690,7 +690,7 @@ func TestDataConsistencyUnderLoad(t *testing.T) {
 			defer wg.Done()
 			for j := 0; j < operationsPerGoroutine; j++ {
 				userID := fmt.Sprintf("@consistency_%d_%d:example.com", id, j)
-				client.CreateUser(context.Background(), &clients.UserSpec{
+				_, _ = client.CreateUser(context.Background(), &clients.UserSpec{
 					UserID:      userID,
 					DisplayName: fmt.Sprintf("User %d_%d", id, j),
 				})

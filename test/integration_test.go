@@ -18,6 +18,9 @@ package test
 
 import (
 	"context"
+	"os"
+	"testing"
+
 	"github.com/crossplane-contrib/provider-matrix/apis"
 	roomv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/room/v1alpha1"
 	userv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/user/v1alpha1"
@@ -28,11 +31,8 @@ import (
 	"github.com/stretchr/testify/suite"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"os"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
-	"testing"
-	"time"
 )
 
 // IntegrationTestSuite provides integration testing for the Matrix provider
@@ -248,8 +248,4 @@ func boolPtr(b bool) *bool {
 
 func stringPtr(s string) *string {
 	return &s
-}
-
-func timePtr(t time.Time) *metav1.Time {
-	return &metav1.Time{Time: t}
 }

@@ -18,11 +18,12 @@ package test
 
 import (
 	"context"
+	"testing"
+
 	"github.com/crossplane-contrib/provider-matrix/internal/clients"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 // Priority 4: Room Creation with Advanced Options
@@ -95,14 +96,12 @@ func TestRoomCreationWithInitialState(t *testing.T) {
 	mockClient := &MockAdvancedRoomClient{
 		createRoomFn: func(ctx context.Context, room *clients.RoomSpec) (*clients.Room, error) {
 			// Verify initialState is provided
-			if room.InitialState != nil && len(room.InitialState) > 0 {
-				for _, event := range room.InitialState {
-					if event.Type == "m.room.encryption" {
-						return &clients.Room{
-							Name:              room.Name,
-							EncryptionEnabled: true,
-						}, nil
-					}
+			for _, event := range room.InitialState {
+				if event.Type == "m.room.encryption" {
+					return &clients.Room{
+						Name:              room.Name,
+						EncryptionEnabled: true,
+					}, nil
 				}
 			}
 			return &clients.Room{Name: room.Name}, nil
