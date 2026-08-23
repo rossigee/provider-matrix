@@ -310,3 +310,6 @@ For security concerns, please see our [Security Policy](SECURITY.md).
 - 💬 **Community**: [Crossplane Slack](https://slack.crossplane.io/)
 - 🐛 **Issues**: [GitHub Issues](https://github.com/crossplane-contrib/provider-matrix/issues)
 - 🗣️ **Discussions**: [GitHub Discussions](https://github.com/crossplane-contrib/provider-matrix/discussions)
+## Implementation
+
+This provider is a native Crossplane controller that directly implements the provider APIs without using Terraform or upjet scaffolding. This approach yields smaller binaries, simpler code, and reduced dependencies.
