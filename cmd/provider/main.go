@@ -25,6 +25,11 @@ import (
 
 	"github.com/crossplane-contrib/provider-matrix/apis"
 	"github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
+	powerlevelv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/powerlevel/v1alpha1"
+	roomv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/room/v1alpha1"
+	roomaliasv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/roomalias/v1alpha1"
+	spacev1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/space/v1alpha1"
+	userv1alpha1 "github.com/crossplane-contrib/provider-matrix/apis/user/v1alpha1"
 	"github.com/crossplane-contrib/provider-matrix/internal/controller"
 	"github.com/crossplane-contrib/provider-matrix/internal/features"
 	"github.com/crossplane-contrib/provider-matrix/internal/tracing"
@@ -33,6 +38,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/feature"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
+	"github.com/crossplane/crossplane-runtime/v2/pkg/statemetrics"
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"gopkg.in/alecthomas/kingpin.v2"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -42,6 +48,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	"sigs.k8s.io/controller-runtime/pkg/metrics"
+	metricserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 )
 
 func main() {
@@ -54,6 +62,8 @@ func main() {
 		leaderElection             = app.Flag("leader-election", "Use leader election for the controller manager.").Short('l').Default("false").OverrideDefaultFromEnvar("LEADER_ELECTION").Bool()
 		namespace                  = app.Flag("namespace", "Namespace used to set as default scope in default secret store config.").Default("crossplane-system").Envar("POD_NAMESPACE").String()
 		enableExternalSecretStores = app.Flag("enable-external-secret-stores", "Enable support for ExternalSecretStores.").Default("false").Envar("ENABLE_EXTERNAL_SECRET_STORES").Bool()
+		pollStateMetricInterval    = app.Flag("poll-state-metric", "State metric recording interval").Default("5s").Duration()
+		metricsBindAddress         = app.Flag("metrics-bind-address", "The address the metrics endpoint binds to.").Default(":8080").String()
 	)
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 
@@ -82,12 +92,21 @@ func main() {
 	kingpin.FatalIfError(err, "Cannot get API server rest config")
 
 	// Feature flags
+	mrStateMetrics := statemetrics.NewMRStateMetrics()
+	metrics.Registry.MustRegister(mrStateMetrics)
+
+	mo := xpcontroller.MetricOptions{
+		PollStateMetricInterval: *pollStateMetricInterval,
+		MRStateMetrics:          mrStateMetrics,
+	}
+
 	o := xpcontroller.Options{
 		Logger:                  log,
 		MaxConcurrentReconciles: *maxReconcileRate,
 		PollInterval:            *pollInterval,
 		GlobalRateLimiter:       ratelimiter.NewGlobal(*maxReconcileRate),
 		Features:                &feature.Flags{},
+		MetricOptions:           &mo,
 	}
 	if *enableExternalSecretStores {
 		o.Features.Enable(features.EnableAlphaExternalSecretStores)
@@ -101,6 +120,9 @@ func main() {
 		LeaderElectionResourceLock: resourcelock.LeasesResourceLock,
 		LeaseDuration:              func() *time.Duration { d := 60 * time.Second; return &d }(),
 		RenewDeadline:              func() *time.Duration { d := 50 * time.Second; return &d }(),
+		Metrics: metricserver.Options{
+			BindAddress: *metricsBindAddress,
+		},
 	})
 	kingpin.FatalIfError(err, "Cannot create controller manager")
 
@@ -114,6 +136,13 @@ func main() {
 	}
 
 	kingpin.FatalIfError(controller.Setup(mgr, o), "Cannot setup controllers")
+
+	// Register state metrics for managed resources
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &roomv1alpha1.RoomList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for Room")
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &roomaliasv1alpha1.RoomAliasList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for RoomAlias")
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &powerlevelv1alpha1.PowerLevelList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for PowerLevel")
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &spacev1alpha1.SpaceList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for Space")
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &userv1alpha1.UserList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for User")
 
 	kingpin.FatalIfError(mgr.AddHealthzCheck("healthz", healthz.Ping), "Cannot add health check")
 	kingpin.FatalIfError(mgr.AddReadyzCheck("readyz", healthz.Ping), "Cannot add ready check")
