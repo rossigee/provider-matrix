@@ -23,6 +23,7 @@ import (
 	"github.com/crossplane-contrib/provider-matrix/apis/roomalias/v1alpha1"
 	apisv1beta1 "github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
 	"github.com/crossplane-contrib/provider-matrix/internal/clients"
+	"github.com/crossplane-contrib/provider-matrix/internal/features"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
@@ -51,8 +52,7 @@ const (
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	name := managed.ControllerName(v1alpha1.RoomAliasKind)
 
-	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(v1alpha1.RoomAliasGroupVersionKind),
+	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
 			kube:         mgr.GetClient(),
 			usage:        clients.NewProviderConfigUsageTracker(mgr.GetClient()),
@@ -60,7 +60,14 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		}),
 		managed.WithLogger(o.Logger.WithValues("controller", name)),
 		managed.WithPollInterval(o.PollInterval),
-		managed.WithRecorder(nil))
+		managed.WithRecorder(nil),
+	}
+	if o.Features.Enabled(features.EnableAlphaManagementPolicies) {
+		opts = append(opts, managed.WithManagementPolicies())
+	}
+	r := managed.NewReconciler(mgr,
+		resource.ManagedKind(v1alpha1.RoomAliasGroupVersionKind),
+		opts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
