@@ -1,4 +1,4 @@
-module github.com/crossplane-contrib/provider-matrix
+module github.com/rossigee/provider-matrix
 
 go 1.27.1
 

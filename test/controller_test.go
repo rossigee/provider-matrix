@@ -20,10 +20,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/crossplane-contrib/provider-matrix/apis/user/v1alpha1"
-	"github.com/crossplane-contrib/provider-matrix/internal/clients"
 	xpcoreapi "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
+	"github.com/rossigee/provider-matrix/apis/user/v1alpha1"
+	"github.com/rossigee/provider-matrix/internal/clients"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

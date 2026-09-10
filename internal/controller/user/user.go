@@ -19,10 +19,6 @@ package user
 import (
 	"context"
 
-	"github.com/crossplane-contrib/provider-matrix/apis/user/v1alpha1"
-	apisv1beta1 "github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
-	"github.com/crossplane-contrib/provider-matrix/internal/clients"
-	"github.com/crossplane-contrib/provider-matrix/internal/features"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/meta"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/ratelimiter"
@@ -30,6 +26,10 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
+	"github.com/rossigee/provider-matrix/apis/user/v1alpha1"
+	apisv1beta1 "github.com/rossigee/provider-matrix/apis/v1beta1"
+	"github.com/rossigee/provider-matrix/internal/clients"
+	"github.com/rossigee/provider-matrix/internal/features"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"

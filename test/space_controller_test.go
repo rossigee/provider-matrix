@@ -20,8 +20,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/crossplane-contrib/provider-matrix/apis/space/v1alpha1"
-	"github.com/crossplane-contrib/provider-matrix/internal/clients"
+	"github.com/rossigee/provider-matrix/apis/space/v1alpha1"
+	"github.com/rossigee/provider-matrix/internal/clients"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

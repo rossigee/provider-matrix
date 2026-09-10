@@ -20,8 +20,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/crossplane-contrib/provider-matrix/apis/user/v1alpha1"
-	"github.com/crossplane-contrib/provider-matrix/internal/clients"
+	"github.com/rossigee/provider-matrix/apis/user/v1alpha1"
+	"github.com/rossigee/provider-matrix/internal/clients"
 	"github.com/stretchr/testify/assert"
 )
 

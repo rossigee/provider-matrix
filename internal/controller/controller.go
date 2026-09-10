@@ -20,13 +20,13 @@ package controller
 import (
 	"context"
 
-	"github.com/crossplane-contrib/provider-matrix/internal/controller/powerlevel"
-	"github.com/crossplane-contrib/provider-matrix/internal/controller/providerconfig"
-	"github.com/crossplane-contrib/provider-matrix/internal/controller/room"
-	"github.com/crossplane-contrib/provider-matrix/internal/controller/roomalias"
-	"github.com/crossplane-contrib/provider-matrix/internal/controller/user"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/v2/pkg/logging"
+	"github.com/rossigee/provider-matrix/internal/controller/powerlevel"
+	"github.com/rossigee/provider-matrix/internal/controller/providerconfig"
+	"github.com/rossigee/provider-matrix/internal/controller/room"
+	"github.com/rossigee/provider-matrix/internal/controller/roomalias"
+	"github.com/rossigee/provider-matrix/internal/controller/user"
 	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

@@ -2,7 +2,7 @@
 # Setup Project
 
 PROJECT_NAME := provider-matrix
-PROJECT_REPO := github.com/crossplane-contrib/$(PROJECT_NAME)
+PROJECT_REPO := github.com/rossigee/$(PROJECT_NAME)
 
 PLATFORMS ?= linux_amd64 linux_arm64
 GO_REQUIRED_VERSION ?= 1.27.1

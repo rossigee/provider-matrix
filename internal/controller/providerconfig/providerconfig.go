@@ -28,7 +28,7 @@ import (
 
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 
-	"github.com/crossplane-contrib/provider-matrix/apis/v1beta1"
+	"github.com/rossigee/provider-matrix/apis/v1beta1"
 )
 
 const controllerName = "providerconfig.matrix.crossplane.io"
