@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package v1alpha1 contains the v1alpha1 group user.matrix.crossplane.io resources of the provider.
+// Package v1alpha1 contains the v1alpha1 group user.matrix.m.crossplane.io resources of the provider.
 // +kubebuilder:object:generate=true
-// +groupName=user.matrix.crossplane.io
+// +groupName=user.matrix.m.crossplane.io
 // +versionName=v1alpha1
 package v1alpha1
 
@@ -27,7 +27,7 @@ import (
 )
 
 const (
-	Group   = "user.matrix.crossplane.io"
+	Group   = "user.matrix.m.crossplane.io"
 	Version = "v1alpha1"
 )
 
