@@ -22,7 +22,7 @@ import (
 
 	xpcoreapi "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-matrix/apis/user/v1alpha1"
+	"github.com/rossigee/provider-matrix/apis/user/v1beta1"
 	"github.com/rossigee/provider-matrix/internal/clients"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -121,12 +121,12 @@ func (m *MockMatrixClient) BlockRoom(ctx context.Context, roomID string, block b
 // TestExternalObserveCreate tests the Observe operation when resource doesn't exist
 func TestExternalObserveCreate(t *testing.T) {
 	// Create a test user resource with no external name
-	user := &v1alpha1.User{
+	user := &v1beta1.User{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "test-user",
 		},
-		Spec: v1alpha1.UserSpec{
-			ForProvider: v1alpha1.UserParameters{
+		Spec: v1beta1.UserSpec{
+			ForProvider: v1beta1.UserParameters{
 				UserID: stringPtr("@test:example.com"),
 			},
 		},
@@ -273,9 +273,9 @@ func TestUserSpecGeneration(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			user := &v1alpha1.User{
-				Spec: v1alpha1.UserSpec{
-					ForProvider: v1alpha1.UserParameters{
+			user := &v1beta1.User{
+				Spec: v1beta1.UserSpec{
+					ForProvider: v1beta1.UserParameters{
 						UserID:      tt.userID,
 						DisplayName: tt.displayName,
 						Password:    tt.password,
@@ -332,8 +332,8 @@ func TestIsNotFound(t *testing.T) {
 
 // TestProviderConfigReference tests provider config reference handling
 func TestProviderConfigReference(t *testing.T) {
-	user := &v1alpha1.User{
-		Spec: v1alpha1.UserSpec{},
+	user := &v1beta1.User{
+		Spec: v1beta1.UserSpec{},
 	}
 
 	// Test GetProviderConfigReference
@@ -348,7 +348,7 @@ func TestProviderConfigReference(t *testing.T) {
 
 // TestUserConditions tests condition management
 func TestUserConditions(t *testing.T) {
-	user := &v1alpha1.User{}
+	user := &v1beta1.User{}
 
 	// Set conditions
 	cond := xpcoreapi.Available()
@@ -361,7 +361,7 @@ func TestUserConditions(t *testing.T) {
 
 // TestUserManagementPolicies tests management policy handling
 func TestUserManagementPolicies(t *testing.T) {
-	user := &v1alpha1.User{}
+	user := &v1beta1.User{}
 
 	policies := xpcoreapi.ManagementPolicies{"*"}
 	user.SetManagementPolicies(policies)
@@ -372,7 +372,7 @@ func TestUserManagementPolicies(t *testing.T) {
 
 // TestUserWriteConnectionSecret tests secret reference handling
 func TestUserWriteConnectionSecret(t *testing.T) {
-	user := &v1alpha1.User{}
+	user := &v1beta1.User{}
 
 	secretRef := &xpcoreapi.LocalSecretReference{
 		Name: "credentials",

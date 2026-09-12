@@ -20,7 +20,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/rossigee/provider-matrix/apis/space/v1alpha1"
+	"github.com/rossigee/provider-matrix/apis/space/v1beta1"
 	"github.com/rossigee/provider-matrix/internal/clients"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -193,12 +193,12 @@ func TestSpaceDelete(t *testing.T) {
 
 // TestSpaceResource tests Space CR creation
 func TestSpaceResource(t *testing.T) {
-	space := &v1alpha1.Space{
+	space := &v1beta1.Space{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "eng-space",
 		},
-		Spec: v1alpha1.SpaceSpec{
-			ForProvider: v1alpha1.SpaceParameters{
+		Spec: v1beta1.SpaceSpec{
+			ForProvider: v1beta1.SpaceParameters{
 				Name:  stringPtr("Engineering"),
 				Topic: stringPtr("Engineering organization"),
 			},
@@ -211,7 +211,7 @@ func TestSpaceResource(t *testing.T) {
 
 // TestSpaceResourceMetadata tests Space resource metadata
 func TestSpaceResourceMetadata(t *testing.T) {
-	space := &v1alpha1.Space{
+	space := &v1beta1.Space{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "eng-space",
 			Namespace: "default",

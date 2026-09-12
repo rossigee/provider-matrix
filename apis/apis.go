@@ -18,11 +18,11 @@ limitations under the License.
 package apis
 
 import (
-	powerlevelv1alpha1 "github.com/rossigee/provider-matrix/apis/powerlevel/v1alpha1"
-	roomv1alpha1 "github.com/rossigee/provider-matrix/apis/room/v1alpha1"
-	roomaliasv1alpha1 "github.com/rossigee/provider-matrix/apis/roomalias/v1alpha1"
-	spacev1alpha1 "github.com/rossigee/provider-matrix/apis/space/v1alpha1"
-	userv1alpha1 "github.com/rossigee/provider-matrix/apis/user/v1alpha1"
+	powerlevelv1beta1 "github.com/rossigee/provider-matrix/apis/powerlevel/v1beta1"
+	roomv1beta1 "github.com/rossigee/provider-matrix/apis/room/v1beta1"
+	roomaliasv1beta1 "github.com/rossigee/provider-matrix/apis/roomalias/v1beta1"
+	spacev1beta1 "github.com/rossigee/provider-matrix/apis/space/v1beta1"
+	userv1beta1 "github.com/rossigee/provider-matrix/apis/user/v1beta1"
 	"github.com/rossigee/provider-matrix/apis/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -30,18 +30,16 @@ import (
 func init() {
 	AddToSchemes = append(AddToSchemes,
 		v1beta1.SchemeBuilder.AddToScheme,
-		userv1alpha1.SchemeBuilder.AddToScheme,
-		roomv1alpha1.SchemeBuilder.AddToScheme,
-		spacev1alpha1.SchemeBuilder.AddToScheme,
-		powerlevelv1alpha1.SchemeBuilder.AddToScheme,
-		roomaliasv1alpha1.SchemeBuilder.AddToScheme,
+		userv1beta1.SchemeBuilder.AddToScheme,
+		roomv1beta1.SchemeBuilder.AddToScheme,
+		spacev1beta1.SchemeBuilder.AddToScheme,
+		powerlevelv1beta1.SchemeBuilder.AddToScheme,
+		roomaliasv1beta1.SchemeBuilder.AddToScheme,
 	)
 }
 
-// AddToSchemes may be used to add all resources defined in the project to a Scheme
 var AddToSchemes runtime.SchemeBuilder
 
-// AddToScheme adds all Resources to the Scheme
 func AddToScheme(s *runtime.Scheme) error {
 	return AddToSchemes.AddToScheme(s)
 }

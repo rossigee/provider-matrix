@@ -19,23 +19,23 @@
 
 This provider supports the following Matrix resources:
 
-- **User** (`user.matrix.crossplane.io`) - Manage Matrix users with profiles, administrative privileges, devices, and lifecycle
-- **Room** (`room.matrix.crossplane.io`) - Create and manage Matrix rooms with custom settings, encryption, and access controls  
-- **Space** (`space.matrix.crossplane.io`) - Organize rooms into hierarchical spaces for better organization
-- **PowerLevel** (`powerlevel.matrix.crossplane.io`) - Configure granular permissions and power levels within rooms
-- **RoomAlias** (`roomalias.matrix.crossplane.io`) - Create human-readable aliases for Matrix rooms
+- **User** (`user.matrix.m.crossplane.io/v1beta1`) - Manage Matrix users with profiles, administrative privileges, devices, and lifecycle
+- **Room** (`room.matrix.m.crossplane.io/v1beta1`) - Create and manage Matrix rooms with custom settings, encryption, and access controls  
+- **Space** (`space.matrix.m.crossplane.io/v1beta1`) - Organize rooms into hierarchical spaces for better organization
+- **PowerLevel** (`powerlevel.matrix.m.crossplane.io/v1beta1`) - Configure granular permissions and power levels within rooms
+- **RoomAlias** (`roomalias.matrix.m.crossplane.io/v1beta1`) - Create human-readable aliases for Matrix rooms
 
 ## Resource Types
 
-All resources are cluster-scoped (`v1alpha1`, no `.m.` namespaced group).
+All resources are namespaced (`v1beta1`, `.m.` groups) for Crossplane v2 multi-tenancy.
 
 | Resource | API Group | Description |
 |----------|-----------|-------------|
-| User | `user.matrix.crossplane.io` | Matrix users with profiles, admin privileges, devices |
-| Room | `room.matrix.crossplane.io` | Matrix rooms with settings, encryption, access controls |
-| Space | `space.matrix.crossplane.io` | Hierarchical organization of rooms |
-| PowerLevel | `powerlevel.matrix.crossplane.io` | Granular permissions within rooms |
-| RoomAlias | `roomalias.matrix.crossplane.io` | Human-readable aliases for rooms |
+| User | `user.matrix.m.crossplane.io/v1beta1` | Matrix users with profiles, admin privileges, devices |
+| Room | `room.matrix.m.crossplane.io/v1beta1` | Matrix rooms with settings, encryption, access controls |
+| Space | `space.matrix.m.crossplane.io/v1beta1` | Hierarchical organization of rooms |
+| PowerLevel | `powerlevel.matrix.m.crossplane.io/v1beta1` | Granular permissions within rooms |
+| RoomAlias | `roomalias.matrix.m.crossplane.io/v1beta1` | Human-readable aliases for rooms |
 
 ## Getting Started
 
@@ -101,7 +101,7 @@ data:
 The ProviderConfig should reference this secret and specify your homeserver URL:
 
 ```yaml
-apiVersion: matrix.crossplane.io/v1beta1
+apiVersion: matrix.m.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
   name: default
@@ -143,7 +143,7 @@ curl -XPOST -d '{"type":"m.login.password", "user":"admin", "password":"password
 ### User Management
 
 ```yaml
-apiVersion: user.matrix.crossplane.io/v1alpha1
+apiVersion: user.matrix.m.crossplane.io/v1beta1
 kind: User
 metadata:
   name: alice
@@ -164,7 +164,7 @@ spec:
 ### Room Creation
 
 ```yaml
-apiVersion: room.matrix.crossplane.io/v1alpha1
+apiVersion: room.matrix.m.crossplane.io/v1beta1
 kind: Room
 metadata:
   name: team-room
@@ -184,7 +184,7 @@ spec:
 ### Space Organization
 
 ```yaml
-apiVersion: space.matrix.crossplane.io/v1alpha1
+apiVersion: space.matrix.m.crossplane.io/v1beta1
 kind: Space
 metadata:
   name: company-space

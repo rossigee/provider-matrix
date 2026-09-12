@@ -1,4 +1,4 @@
-apiVersion: room.matrix.crossplane.io/v1alpha1
+apiVersion: room.matrix.m.crossplane.io/v1beta1
 kind: Room
 metadata:
   name: example-room

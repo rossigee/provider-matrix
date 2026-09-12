@@ -22,7 +22,7 @@ import (
 
 	xpcoreapi "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-matrix/apis/powerlevel/v1alpha1"
+	"github.com/rossigee/provider-matrix/apis/powerlevel/v1beta1"
 	"github.com/rossigee/provider-matrix/internal/clients"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -176,12 +176,12 @@ func TestGetPowerLevels(t *testing.T) {
 
 // TestPowerLevelResource tests PowerLevel CR creation and manipulation
 func TestPowerLevelResource(t *testing.T) {
-	pl := &v1alpha1.PowerLevel{
+	pl := &v1beta1.PowerLevel{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "test-powerlevel",
 		},
-		Spec: v1alpha1.PowerLevelSpec{
-			ForProvider: v1alpha1.PowerLevelParameters{
+		Spec: v1beta1.PowerLevelSpec{
+			ForProvider: v1beta1.PowerLevelParameters{
 				RoomID: "!test:example.com",
 				Users: map[string]int{
 					"@user:example.com": 50,
@@ -197,7 +197,7 @@ func TestPowerLevelResource(t *testing.T) {
 
 // TestPowerLevelProviderConfigReference tests provider config reference handling
 func TestPowerLevelProviderConfigReference(t *testing.T) {
-	pl := &v1alpha1.PowerLevel{}
+	pl := &v1beta1.PowerLevel{}
 
 	pcRef := &xpcoreapi.ProviderConfigReference{Name: "test-pc"}
 	pl.SetProviderConfigReference(pcRef)
@@ -206,7 +206,7 @@ func TestPowerLevelProviderConfigReference(t *testing.T) {
 
 // TestPowerLevelConditions tests condition management
 func TestPowerLevelConditions(t *testing.T) {
-	pl := &v1alpha1.PowerLevel{}
+	pl := &v1beta1.PowerLevel{}
 
 	cond := xpcoreapi.Available()
 	pl.SetConditions(cond)
@@ -217,7 +217,7 @@ func TestPowerLevelConditions(t *testing.T) {
 
 // TestPowerLevelManagementPolicies tests management policy handling
 func TestPowerLevelManagementPolicies(t *testing.T) {
-	pl := &v1alpha1.PowerLevel{}
+	pl := &v1beta1.PowerLevel{}
 
 	policies := xpcoreapi.ManagementPolicies{"*"}
 	pl.SetManagementPolicies(policies)

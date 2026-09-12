@@ -26,7 +26,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-matrix/apis/user/v1alpha1"
+	"github.com/rossigee/provider-matrix/apis/user/v1beta1"
 	apisv1beta1 "github.com/rossigee/provider-matrix/apis/v1beta1"
 	"github.com/rossigee/provider-matrix/internal/clients"
 	"github.com/rossigee/provider-matrix/internal/features"
@@ -50,7 +50,7 @@ const (
 
 // Setup adds a controller that reconciles User managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(v1alpha1.UserKind)
+	name := managed.ControllerName(v1beta1.UserKind)
 
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
@@ -66,14 +66,14 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		opts = append(opts, managed.WithManagementPolicies())
 	}
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(v1alpha1.UserGroupVersionKind),
+		resource.ManagedKind(v1beta1.UserGroupVersionKind),
 		opts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&v1alpha1.User{}).
+		For(&v1beta1.User{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -91,7 +91,7 @@ type connector struct {
 // 3. Getting the credentials specified by the ProviderConfig.
 // 4. Using the credentials to form a client.
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*v1alpha1.User)
+	cr, ok := mg.(*v1beta1.User)
 	if !ok {
 		return nil, errors.New(errNotUser)
 	}
@@ -129,7 +129,7 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr, ok := mg.(*v1alpha1.User)
+	cr, ok := mg.(*v1beta1.User)
 	if !ok {
 		return managed.ExternalObservation{}, errors.New(errNotUser)
 	}
@@ -161,7 +161,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr, ok := mg.(*v1alpha1.User)
+	cr, ok := mg.(*v1beta1.User)
 	if !ok {
 		return managed.ExternalCreation{}, errors.New(errNotUser)
 	}
@@ -178,7 +178,7 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
-	cr, ok := mg.(*v1alpha1.User)
+	cr, ok := mg.(*v1beta1.User)
 	if !ok {
 		return managed.ExternalUpdate{}, errors.New(errNotUser)
 	}
@@ -194,7 +194,7 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
-	cr, ok := mg.(*v1alpha1.User)
+	cr, ok := mg.(*v1beta1.User)
 	if !ok {
 		return managed.ExternalDelete{}, errors.New(errNotUser)
 	}
@@ -214,7 +214,7 @@ func (c *external) Disconnect(ctx context.Context) error {
 
 // Helper functions
 
-func generateUserSpec(cr *v1alpha1.User) *clients.UserSpec {
+func generateUserSpec(cr *v1beta1.User) *clients.UserSpec {
 	spec := &clients.UserSpec{}
 
 	if cr.Spec.ForProvider.UserID != nil {
@@ -262,8 +262,8 @@ func generateUserSpec(cr *v1alpha1.User) *clients.UserSpec {
 	return spec
 }
 
-func generateUserObservation(user *clients.User) v1alpha1.UserObservation {
-	obs := v1alpha1.UserObservation{
+func generateUserObservation(user *clients.User) v1beta1.UserObservation {
+	obs := v1beta1.UserObservation{
 		UserID:      user.UserID,
 		DisplayName: user.DisplayName,
 		AvatarURL:   user.AvatarURL,
@@ -282,7 +282,7 @@ func generateUserObservation(user *clients.User) v1alpha1.UserObservation {
 	// Convert external IDs
 	for _, extID := range user.ExternalIDs {
 		validated := &extID.Validated
-		obs.ExternalIDs = append(obs.ExternalIDs, v1alpha1.ExternalID{
+		obs.ExternalIDs = append(obs.ExternalIDs, v1beta1.ExternalID{
 			Medium:    extID.Medium,
 			Address:   extID.Address,
 			Validated: validated,
@@ -291,7 +291,7 @@ func generateUserObservation(user *clients.User) v1alpha1.UserObservation {
 
 	// Convert devices
 	for _, device := range user.Devices {
-		deviceObs := v1alpha1.Device{
+		deviceObs := v1beta1.Device{
 			DeviceID:    device.DeviceID,
 			DisplayName: device.DisplayName,
 			LastSeenIP:  device.LastSeenIP,
@@ -305,7 +305,7 @@ func generateUserObservation(user *clients.User) v1alpha1.UserObservation {
 	return obs
 }
 
-func isUserUpToDate(cr *v1alpha1.User, user *clients.User) bool {
+func isUserUpToDate(cr *v1beta1.User, user *clients.User) bool {
 	// Check display name
 	if cr.Spec.ForProvider.DisplayName != nil && *cr.Spec.ForProvider.DisplayName != user.DisplayName {
 		return false

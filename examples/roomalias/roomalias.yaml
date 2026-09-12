@@ -1,4 +1,4 @@
-apiVersion: roomalias.matrix.crossplane.io/v1alpha1
+apiVersion: roomalias.matrix.m.crossplane.io/v1beta1
 kind: RoomAlias
 metadata:
   name: example-roomalias

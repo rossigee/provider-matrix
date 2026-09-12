@@ -1,4 +1,4 @@
-apiVersion: user.matrix.crossplane.io/v1alpha1
+apiVersion: user.matrix.m.crossplane.io/v1beta1
 kind: User
 metadata:
   name: example-user

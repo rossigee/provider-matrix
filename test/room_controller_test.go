@@ -22,7 +22,7 @@ import (
 
 	xpcoreapi "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-matrix/apis/room/v1alpha1"
+	"github.com/rossigee/provider-matrix/apis/room/v1beta1"
 	"github.com/rossigee/provider-matrix/internal/clients"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -216,12 +216,12 @@ func TestRoomDelete(t *testing.T) {
 
 // TestRoomResource tests Room CR creation and manipulation
 func TestRoomResource(t *testing.T) {
-	room := &v1alpha1.Room{
+	room := &v1beta1.Room{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "test-room",
 		},
-		Spec: v1alpha1.RoomSpec{
-			ForProvider: v1alpha1.RoomParameters{
+		Spec: v1beta1.RoomSpec{
+			ForProvider: v1beta1.RoomParameters{
 				Name:              stringPtr("Test Room"),
 				Topic:             stringPtr("Room topic"),
 				Preset:            stringPtr("public_chat"),
@@ -236,7 +236,7 @@ func TestRoomResource(t *testing.T) {
 
 // TestRoomProviderConfigReference tests room provider config reference
 func TestRoomProviderConfigReference(t *testing.T) {
-	room := &v1alpha1.Room{}
+	room := &v1beta1.Room{}
 
 	pcRef := &xpcoreapi.ProviderConfigReference{Name: "test-pc"}
 	room.SetProviderConfigReference(pcRef)
@@ -245,7 +245,7 @@ func TestRoomProviderConfigReference(t *testing.T) {
 
 // TestRoomConditions tests room condition management
 func TestRoomConditions(t *testing.T) {
-	room := &v1alpha1.Room{}
+	room := &v1beta1.Room{}
 
 	cond := xpcoreapi.Available()
 	room.SetConditions(cond)

@@ -26,7 +26,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-matrix/apis/room/v1alpha1"
+	"github.com/rossigee/provider-matrix/apis/room/v1beta1"
 	apisv1beta1 "github.com/rossigee/provider-matrix/apis/v1beta1"
 	"github.com/rossigee/provider-matrix/internal/clients"
 	"github.com/rossigee/provider-matrix/internal/features"
@@ -51,7 +51,7 @@ const (
 
 // Setup adds a controller that reconciles Room managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(v1alpha1.RoomKind)
+	name := managed.ControllerName(v1beta1.RoomKind)
 
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
@@ -67,14 +67,14 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		opts = append(opts, managed.WithManagementPolicies())
 	}
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(v1alpha1.RoomGroupVersionKind),
+		resource.ManagedKind(v1beta1.RoomGroupVersionKind),
 		opts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&v1alpha1.Room{}).
+		For(&v1beta1.Room{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -92,7 +92,7 @@ type connector struct {
 // 3. Getting the credentials specified by the ProviderConfig.
 // 4. Using the credentials to form a client.
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*v1alpha1.Room)
+	cr, ok := mg.(*v1beta1.Room)
 	if !ok {
 		return nil, errors.New(errNotRoom)
 	}
@@ -130,7 +130,7 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr, ok := mg.(*v1alpha1.Room)
+	cr, ok := mg.(*v1beta1.Room)
 	if !ok {
 		return managed.ExternalObservation{}, errors.New(errNotRoom)
 	}
@@ -162,7 +162,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr, ok := mg.(*v1alpha1.Room)
+	cr, ok := mg.(*v1beta1.Room)
 	if !ok {
 		return managed.ExternalCreation{}, errors.New(errNotRoom)
 	}
@@ -179,7 +179,7 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
-	cr, ok := mg.(*v1alpha1.Room)
+	cr, ok := mg.(*v1beta1.Room)
 	if !ok {
 		return managed.ExternalUpdate{}, errors.New(errNotRoom)
 	}
@@ -195,7 +195,7 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
-	cr, ok := mg.(*v1alpha1.Room)
+	cr, ok := mg.(*v1beta1.Room)
 	if !ok {
 		return managed.ExternalDelete{}, errors.New(errNotRoom)
 	}
@@ -215,7 +215,7 @@ func (c *external) Disconnect(ctx context.Context) error {
 
 // Helper functions
 
-func generateRoomSpec(cr *v1alpha1.Room) *clients.RoomSpec {
+func generateRoomSpec(cr *v1beta1.Room) *clients.RoomSpec {
 	spec := &clients.RoomSpec{}
 
 	if cr.Spec.ForProvider.Name != nil {
@@ -290,8 +290,8 @@ func generateRoomSpec(cr *v1alpha1.Room) *clients.RoomSpec {
 	return spec
 }
 
-func generateRoomObservation(room *clients.Room) v1alpha1.RoomObservation {
-	obs := v1alpha1.RoomObservation{
+func generateRoomObservation(room *clients.Room) v1beta1.RoomObservation {
+	obs := v1beta1.RoomObservation{
 		RoomID:            room.RoomID,
 		Name:              room.Name,
 		Topic:             room.Topic,
@@ -316,7 +316,7 @@ func generateRoomObservation(room *clients.Room) v1alpha1.RoomObservation {
 	for _, state := range room.State {
 		// For now, skip Content conversion - State events are rarely observed
 		// TODO: Implement proper map to RawExtension conversion if needed
-		obs.State = append(obs.State, v1alpha1.StateEvent{
+		obs.State = append(obs.State, v1beta1.StateEvent{
 			Type:     state.Type,
 			StateKey: state.StateKey,
 			Content:  runtime.RawExtension{}, // Empty content for now
@@ -325,7 +325,7 @@ func generateRoomObservation(room *clients.Room) v1alpha1.RoomObservation {
 
 	// Convert power levels
 	if room.PowerLevels != nil {
-		obs.PowerLevels = &v1alpha1.PowerLevelContent{
+		obs.PowerLevels = &v1beta1.PowerLevelContent{
 			Users:         room.PowerLevels.Users,
 			Events:        room.PowerLevels.Events,
 			EventsDefault: room.PowerLevels.EventsDefault,
@@ -341,7 +341,7 @@ func generateRoomObservation(room *clients.Room) v1alpha1.RoomObservation {
 	return obs
 }
 
-func isRoomUpToDate(cr *v1alpha1.Room, room *clients.Room) bool {
+func isRoomUpToDate(cr *v1beta1.Room, room *clients.Room) bool {
 	// Check name
 	if cr.Spec.ForProvider.Name != nil && *cr.Spec.ForProvider.Name != room.Name {
 		return false

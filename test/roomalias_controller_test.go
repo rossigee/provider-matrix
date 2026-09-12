@@ -22,7 +22,7 @@ import (
 
 	xpcoreapi "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-matrix/apis/roomalias/v1alpha1"
+	"github.com/rossigee/provider-matrix/apis/roomalias/v1beta1"
 	"github.com/rossigee/provider-matrix/internal/clients"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -200,12 +200,12 @@ func TestDeleteRoomAliasError(t *testing.T) {
 
 // TestRoomAliasResource tests RoomAlias CR creation and manipulation
 func TestRoomAliasResource(t *testing.T) {
-	alias := &v1alpha1.RoomAlias{
+	alias := &v1beta1.RoomAlias{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "general-alias",
 		},
-		Spec: v1alpha1.RoomAliasSpec{
-			ForProvider: v1alpha1.RoomAliasParameters{
+		Spec: v1beta1.RoomAliasSpec{
+			ForProvider: v1beta1.RoomAliasParameters{
 				Alias:  "#general:example.com",
 				RoomID: "!abc123:example.com",
 			},
@@ -219,7 +219,7 @@ func TestRoomAliasResource(t *testing.T) {
 
 // TestRoomAliasProviderConfigReference tests provider config reference handling
 func TestRoomAliasProviderConfigReference(t *testing.T) {
-	alias := &v1alpha1.RoomAlias{}
+	alias := &v1beta1.RoomAlias{}
 
 	pcRef := &xpcoreapi.ProviderConfigReference{Name: "test-pc"}
 	alias.SetProviderConfigReference(pcRef)
@@ -228,7 +228,7 @@ func TestRoomAliasProviderConfigReference(t *testing.T) {
 
 // TestRoomAliasConditions tests condition management
 func TestRoomAliasConditions(t *testing.T) {
-	alias := &v1alpha1.RoomAlias{}
+	alias := &v1beta1.RoomAlias{}
 
 	cond := xpcoreapi.Available()
 	alias.SetConditions(cond)
@@ -239,7 +239,7 @@ func TestRoomAliasConditions(t *testing.T) {
 
 // TestRoomAliasManagementPolicies tests management policy handling
 func TestRoomAliasManagementPolicies(t *testing.T) {
-	alias := &v1alpha1.RoomAlias{}
+	alias := &v1beta1.RoomAlias{}
 
 	policies := xpcoreapi.ManagementPolicies{"*"}
 	alias.SetManagementPolicies(policies)
@@ -250,7 +250,7 @@ func TestRoomAliasManagementPolicies(t *testing.T) {
 
 // TestRoomAliasWriteConnectionSecret tests secret reference handling
 func TestRoomAliasWriteConnectionSecret(t *testing.T) {
-	alias := &v1alpha1.RoomAlias{}
+	alias := &v1beta1.RoomAlias{}
 
 	secretRef := &xpcoreapi.LocalSecretReference{
 		Name: "alias-config",

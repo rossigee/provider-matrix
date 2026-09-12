@@ -40,7 +40,7 @@ func TestProviderMatrixComponents(t *testing.T) {
 		},
 		{
 			name:      "CRD Definitions",
-			component: "apis/*/v1alpha1",
+			component: "apis/*/v1beta1",
 			features: []string{
 				"User resource type",
 				"Room resource type",

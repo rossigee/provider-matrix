@@ -1,4 +1,4 @@
-apiVersion: space.matrix.crossplane.io/v1alpha1
+apiVersion: space.matrix.m.crossplane.io/v1beta1
 kind: Space
 metadata:
   name: example-space

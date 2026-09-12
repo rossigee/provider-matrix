@@ -27,7 +27,7 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/resource"
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/pkg/errors"
-	"github.com/rossigee/provider-matrix/apis/roomalias/v1alpha1"
+	"github.com/rossigee/provider-matrix/apis/roomalias/v1beta1"
 	apisv1beta1 "github.com/rossigee/provider-matrix/apis/v1beta1"
 	"github.com/rossigee/provider-matrix/internal/clients"
 	"github.com/rossigee/provider-matrix/internal/features"
@@ -50,7 +50,7 @@ const (
 
 // Setup adds a controller that reconciles RoomAlias managed resources.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
-	name := managed.ControllerName(v1alpha1.RoomAliasKind)
+	name := managed.ControllerName(v1beta1.RoomAliasKind)
 
 	opts := []managed.ReconcilerOption{
 		managed.WithExternalConnector(&connector{
@@ -66,14 +66,14 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		opts = append(opts, managed.WithManagementPolicies())
 	}
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(v1alpha1.RoomAliasGroupVersionKind),
+		resource.ManagedKind(v1beta1.RoomAliasGroupVersionKind),
 		opts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
-		For(&v1alpha1.RoomAlias{}).
+		For(&v1beta1.RoomAlias{}).
 		Complete(ratelimiter.NewReconciler(name, r, o.GlobalRateLimiter))
 }
 
@@ -91,7 +91,7 @@ type connector struct {
 // 3. Getting the credentials specified by the ProviderConfig.
 // 4. Using the credentials to form a client.
 func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.ExternalClient, error) {
-	cr, ok := mg.(*v1alpha1.RoomAlias)
+	cr, ok := mg.(*v1beta1.RoomAlias)
 	if !ok {
 		return nil, errors.New(errNotRoomAlias)
 	}
@@ -129,7 +129,7 @@ type external struct {
 }
 
 func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
-	cr, ok := mg.(*v1alpha1.RoomAlias)
+	cr, ok := mg.(*v1beta1.RoomAlias)
 	if !ok {
 		return managed.ExternalObservation{}, errors.New(errNotRoomAlias)
 	}
@@ -155,7 +155,7 @@ func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.Ex
 }
 
 func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.ExternalCreation, error) {
-	cr, ok := mg.(*v1alpha1.RoomAlias)
+	cr, ok := mg.(*v1beta1.RoomAlias)
 	if !ok {
 		return managed.ExternalCreation{}, errors.New(errNotRoomAlias)
 	}
@@ -176,7 +176,7 @@ func (c *external) Create(ctx context.Context, mg resource.Managed) (managed.Ext
 func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.ExternalUpdate, error) {
 	// Room aliases cannot be updated, only recreated
 	// If the room ID changes, we need to delete and recreate
-	cr, ok := mg.(*v1alpha1.RoomAlias)
+	cr, ok := mg.(*v1beta1.RoomAlias)
 	if !ok {
 		return managed.ExternalUpdate{}, errors.New(errNotRoomAlias)
 	}
@@ -200,7 +200,7 @@ func (c *external) Update(ctx context.Context, mg resource.Managed) (managed.Ext
 }
 
 func (c *external) Delete(ctx context.Context, mg resource.Managed) (managed.ExternalDelete, error) {
-	cr, ok := mg.(*v1alpha1.RoomAlias)
+	cr, ok := mg.(*v1beta1.RoomAlias)
 	if !ok {
 		return managed.ExternalDelete{}, errors.New(errNotRoomAlias)
 	}
@@ -224,8 +224,8 @@ func (c *external) Disconnect(ctx context.Context) error {
 
 // Helper functions
 
-func generateRoomAliasObservation(roomAlias *clients.RoomAlias) v1alpha1.RoomAliasObservation {
-	obs := v1alpha1.RoomAliasObservation{
+func generateRoomAliasObservation(roomAlias *clients.RoomAlias) v1beta1.RoomAliasObservation {
+	obs := v1beta1.RoomAliasObservation{
 		Alias:        roomAlias.Alias,
 		RoomID:       roomAlias.RoomID,
 		IsCanonical:  false, // This would need to be determined by checking room state
@@ -237,7 +237,7 @@ func generateRoomAliasObservation(roomAlias *clients.RoomAlias) v1alpha1.RoomAli
 	return obs
 }
 
-func isRoomAliasUpToDate(cr *v1alpha1.RoomAlias, roomAlias *clients.RoomAlias) bool {
+func isRoomAliasUpToDate(cr *v1beta1.RoomAlias, roomAlias *clients.RoomAlias) bool {
 	// Check if the alias points to the correct room
 	if cr.Spec.ForProvider.RoomID != roomAlias.RoomID {
 		return false

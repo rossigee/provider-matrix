@@ -30,11 +30,11 @@ import (
 	"github.com/crossplane/crossplane-runtime/v2/pkg/statemetrics"
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/rossigee/provider-matrix/apis"
-	powerlevelv1alpha1 "github.com/rossigee/provider-matrix/apis/powerlevel/v1alpha1"
-	roomv1alpha1 "github.com/rossigee/provider-matrix/apis/room/v1alpha1"
-	roomaliasv1alpha1 "github.com/rossigee/provider-matrix/apis/roomalias/v1alpha1"
-	spacev1alpha1 "github.com/rossigee/provider-matrix/apis/space/v1alpha1"
-	userv1alpha1 "github.com/rossigee/provider-matrix/apis/user/v1alpha1"
+	powerlevelv1beta1 "github.com/rossigee/provider-matrix/apis/powerlevel/v1beta1"
+	roomv1beta1 "github.com/rossigee/provider-matrix/apis/room/v1beta1"
+	roomaliasv1beta1 "github.com/rossigee/provider-matrix/apis/roomalias/v1beta1"
+	spacev1beta1 "github.com/rossigee/provider-matrix/apis/space/v1beta1"
+	userv1beta1 "github.com/rossigee/provider-matrix/apis/user/v1beta1"
 	"github.com/rossigee/provider-matrix/apis/v1beta1"
 	"github.com/rossigee/provider-matrix/internal/controller"
 	"github.com/rossigee/provider-matrix/internal/features"
@@ -144,11 +144,11 @@ func main() {
 	kingpin.FatalIfError(controller.Setup(mgr, o), "Cannot setup controllers")
 
 	// Register state metrics for managed resources
-	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &roomv1alpha1.RoomList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for Room")
-	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &roomaliasv1alpha1.RoomAliasList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for RoomAlias")
-	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &powerlevelv1alpha1.PowerLevelList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for PowerLevel")
-	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &spacev1alpha1.SpaceList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for Space")
-	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &userv1alpha1.UserList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for User")
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &roomv1beta1.RoomList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for Room")
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &roomaliasv1beta1.RoomAliasList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for RoomAlias")
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &powerlevelv1beta1.PowerLevelList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for PowerLevel")
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &spacev1beta1.SpaceList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for Space")
+	kingpin.FatalIfError(mgr.Add(statemetrics.NewMRStateRecorder(mgr.GetClient(), o.Logger, o.MetricOptions.MRStateMetrics, &userv1beta1.UserList{}, o.MetricOptions.PollStateMetricInterval)), "Cannot register state metrics for User")
 
 	kingpin.FatalIfError(mgr.AddHealthzCheck("healthz", healthz.Ping), "Cannot add health check")
 	kingpin.FatalIfError(mgr.AddReadyzCheck("readyz", healthz.Ping), "Cannot add ready check")

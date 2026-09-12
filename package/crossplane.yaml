@@ -79,7 +79,7 @@ metadata:
       The ProviderConfig should reference this secret and specify your homeserver URL:
 
       ```yaml
-      apiVersion: matrix.crossplane.io/v1beta1
+      apiVersion: matrix.m.crossplane.io/v1beta1
       kind: ProviderConfig
       metadata:
         name: default

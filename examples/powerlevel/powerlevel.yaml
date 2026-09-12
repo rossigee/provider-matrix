@@ -1,4 +1,4 @@
-apiVersion: powerlevel.matrix.crossplane.io/v1alpha1
+apiVersion: powerlevel.matrix.m.crossplane.io/v1beta1
 kind: PowerLevel
 metadata:
   name: example-powerlevel

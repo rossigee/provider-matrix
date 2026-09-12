@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rossigee/provider-matrix/apis/user/v1alpha1"
+	"github.com/rossigee/provider-matrix/apis/user/v1beta1"
 	"github.com/rossigee/provider-matrix/internal/clients"
 	"github.com/stretchr/testify/assert"
 )
@@ -28,14 +28,14 @@ import (
 func TestGenerateUserSpec(t *testing.T) {
 	tests := []struct {
 		name string
-		cr   *v1alpha1.User
+		cr   *v1beta1.User
 		want *clients.UserSpec
 	}{
 		{
 			name: "basic user spec",
-			cr: &v1alpha1.User{
-				Spec: v1alpha1.UserSpec{
-					ForProvider: v1alpha1.UserParameters{
+			cr: &v1beta1.User{
+				Spec: v1beta1.UserSpec{
+					ForProvider: v1beta1.UserParameters{
 						UserID:      stringPtr("@alice:example.com"),
 						DisplayName: stringPtr("Alice Wonderland"),
 						Admin:       boolPtr(false),
@@ -50,14 +50,14 @@ func TestGenerateUserSpec(t *testing.T) {
 		},
 		{
 			name: "admin user with external IDs",
-			cr: &v1alpha1.User{
-				Spec: v1alpha1.UserSpec{
-					ForProvider: v1alpha1.UserParameters{
+			cr: &v1beta1.User{
+				Spec: v1beta1.UserSpec{
+					ForProvider: v1beta1.UserParameters{
 						UserID:      stringPtr("@admin:example.com"),
 						DisplayName: stringPtr("Admin User"),
 						Admin:       boolPtr(true),
 						UserType:    stringPtr("admin"),
-						ExternalIDs: []v1alpha1.ExternalID{
+						ExternalIDs: []v1beta1.ExternalID{
 							{
 								Medium:    "email",
 								Address:   "admin@example.com",
@@ -133,15 +133,15 @@ func TestGenerateUserObservation(t *testing.T) {
 func TestIsUserUpToDate(t *testing.T) {
 	tests := []struct {
 		name string
-		cr   *v1alpha1.User
+		cr   *v1beta1.User
 		user *clients.User
 		want bool
 	}{
 		{
 			name: "user is up to date",
-			cr: &v1alpha1.User{
-				Spec: v1alpha1.UserSpec{
-					ForProvider: v1alpha1.UserParameters{
+			cr: &v1beta1.User{
+				Spec: v1beta1.UserSpec{
+					ForProvider: v1beta1.UserParameters{
 						DisplayName: stringPtr("Alice"),
 						Admin:       boolPtr(false),
 					},
@@ -155,9 +155,9 @@ func TestIsUserUpToDate(t *testing.T) {
 		},
 		{
 			name: "display name differs",
-			cr: &v1alpha1.User{
-				Spec: v1alpha1.UserSpec{
-					ForProvider: v1alpha1.UserParameters{
+			cr: &v1beta1.User{
+				Spec: v1beta1.UserSpec{
+					ForProvider: v1beta1.UserParameters{
 						DisplayName: stringPtr("Alice Updated"),
 						Admin:       boolPtr(false),
 					},
@@ -171,9 +171,9 @@ func TestIsUserUpToDate(t *testing.T) {
 		},
 		{
 			name: "admin status differs",
-			cr: &v1alpha1.User{
-				Spec: v1alpha1.UserSpec{
-					ForProvider: v1alpha1.UserParameters{
+			cr: &v1beta1.User{
+				Spec: v1beta1.UserSpec{
+					ForProvider: v1beta1.UserParameters{
 						DisplayName: stringPtr("Alice"),
 						Admin:       boolPtr(true),
 					},

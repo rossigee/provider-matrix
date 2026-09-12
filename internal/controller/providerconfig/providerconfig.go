@@ -31,7 +31,7 @@ import (
 	"github.com/rossigee/provider-matrix/apis/v1beta1"
 )
 
-const controllerName = "providerconfig.matrix.crossplane.io"
+const controllerName = "providerconfig.matrix.m.crossplane.io"
 
 // Setup registers the ProviderConfig controller.
 func Setup(mgr ctrl.Manager) error {

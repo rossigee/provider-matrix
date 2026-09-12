@@ -23,8 +23,8 @@ import (
 
 	xpv1 "github.com/crossplane/crossplane/apis/v2/core/v2"
 	"github.com/rossigee/provider-matrix/apis"
-	roomv1alpha1 "github.com/rossigee/provider-matrix/apis/room/v1alpha1"
-	userv1alpha1 "github.com/rossigee/provider-matrix/apis/user/v1alpha1"
+	roomv1beta1 "github.com/rossigee/provider-matrix/apis/room/v1beta1"
+	userv1beta1 "github.com/rossigee/provider-matrix/apis/user/v1beta1"
 	"github.com/rossigee/provider-matrix/apis/v1beta1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -104,12 +104,12 @@ func (suite *IntegrationTestSuite) TestUserResource() {
 	ctx := context.Background()
 
 	// Create a User resource
-	user := &userv1alpha1.User{
+	user := &userv1beta1.User{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "test-user",
 		},
-		Spec: userv1alpha1.UserSpec{
-			ForProvider: userv1alpha1.UserParameters{
+		Spec: userv1beta1.UserSpec{
+			ForProvider: userv1beta1.UserParameters{
 				UserID:      stringPtr("@testuser:example.com"),
 				DisplayName: stringPtr("Test User"),
 				Admin:       boolPtr(false),
@@ -124,7 +124,7 @@ func (suite *IntegrationTestSuite) TestUserResource() {
 	assert.NoError(suite.T(), err)
 
 	// Verify it was created
-	retrieved := &userv1alpha1.User{}
+	retrieved := &userv1beta1.User{}
 	err = suite.client.Get(ctx, client.ObjectKey{Name: "test-user"}, retrieved)
 	assert.NoError(suite.T(), err)
 	assert.Equal(suite.T(), "@testuser:example.com", *retrieved.Spec.ForProvider.UserID)
@@ -135,12 +135,12 @@ func (suite *IntegrationTestSuite) TestRoomResource() {
 	ctx := context.Background()
 
 	// Create a Room resource
-	room := &roomv1alpha1.Room{
+	room := &roomv1beta1.Room{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "test-room",
 		},
-		Spec: roomv1alpha1.RoomSpec{
-			ForProvider: roomv1alpha1.RoomParameters{
+		Spec: roomv1beta1.RoomSpec{
+			ForProvider: roomv1beta1.RoomParameters{
 				Name:              stringPtr("Test Room"),
 				Topic:             stringPtr("A test room for integration testing"),
 				Preset:            stringPtr("private_chat"),
@@ -160,7 +160,7 @@ func (suite *IntegrationTestSuite) TestRoomResource() {
 	assert.NoError(suite.T(), err)
 
 	// Verify it was created
-	retrieved := &roomv1alpha1.Room{}
+	retrieved := &roomv1beta1.Room{}
 	err = suite.client.Get(ctx, client.ObjectKey{Name: "test-room"}, retrieved)
 	assert.NoError(suite.T(), err)
 	assert.Equal(suite.T(), "Test Room", *retrieved.Spec.ForProvider.Name)
@@ -172,12 +172,12 @@ func (suite *IntegrationTestSuite) TestResourceLifecycle() {
 	ctx := context.Background()
 
 	// Test creating, updating, and deleting resources
-	user := &userv1alpha1.User{
+	user := &userv1beta1.User{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "lifecycle-user",
 		},
-		Spec: userv1alpha1.UserSpec{
-			ForProvider: userv1alpha1.UserParameters{
+		Spec: userv1beta1.UserSpec{
+			ForProvider: userv1beta1.UserParameters{
 				UserID:      stringPtr("@lifecycle:example.com"),
 				DisplayName: stringPtr("Lifecycle User"),
 			},
@@ -197,7 +197,7 @@ func (suite *IntegrationTestSuite) TestResourceLifecycle() {
 	assert.NoError(suite.T(), err)
 
 	// Verify update
-	retrieved := &userv1alpha1.User{}
+	retrieved := &userv1beta1.User{}
 	err = suite.client.Get(ctx, client.ObjectKey{Name: "lifecycle-user"}, retrieved)
 	assert.NoError(suite.T(), err)
 	assert.Equal(suite.T(), "Updated Lifecycle User", *retrieved.Spec.ForProvider.DisplayName)
@@ -221,12 +221,12 @@ func BenchmarkUserCreation(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		user := &userv1alpha1.User{
+		user := &userv1beta1.User{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "bench-user-" + string(rune(i)),
 			},
-			Spec: userv1alpha1.UserSpec{
-				ForProvider: userv1alpha1.UserParameters{
+			Spec: userv1beta1.UserSpec{
+				ForProvider: userv1beta1.UserParameters{
 					UserID:      stringPtr("@bench" + string(rune(i)) + ":example.com"),
 					DisplayName: stringPtr("Benchmark User"),
 				},

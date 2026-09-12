@@ -68,37 +68,37 @@ func setupRBAC(c client.Client, l logging.Logger) error {
 
 	rules := []rbacv1.PolicyRule{
 		{
-			APIGroups: []string{"powerlevel.matrix.crossplane.io"},
+			APIGroups: []string{"powerlevel.matrix.m.crossplane.io"},
 			Resources: []string{"powerlevels", "powerlevels/status"},
 			Verbs:     []string{"get", "list", "watch", "update", "patch", "create"},
 		},
 		{
-			APIGroups: []string{"matrix.crossplane.io"},
+			APIGroups: []string{"matrix.m.crossplane.io"},
 			Resources: []string{"providerconfigs", "providerconfigs/status", "providerconfigusages", "providerconfigusages/status"},
 			Verbs:     []string{"get", "list", "watch", "update", "patch", "create"},
 		},
 		{
-			APIGroups: []string{"roomalias.matrix.crossplane.io"},
+			APIGroups: []string{"roomalias.matrix.m.crossplane.io"},
 			Resources: []string{"roomaliases", "roomaliases/status"},
 			Verbs:     []string{"get", "list", "watch", "update", "patch", "create"},
 		},
 		{
-			APIGroups: []string{"room.matrix.crossplane.io"},
+			APIGroups: []string{"room.matrix.m.crossplane.io"},
 			Resources: []string{"rooms", "rooms/status"},
 			Verbs:     []string{"get", "list", "watch", "update", "patch", "create"},
 		},
 		{
-			APIGroups: []string{"space.matrix.crossplane.io"},
+			APIGroups: []string{"space.matrix.m.crossplane.io"},
 			Resources: []string{"spaces", "spaces/status"},
 			Verbs:     []string{"get", "list", "watch", "update", "patch", "create"},
 		},
 		{
-			APIGroups: []string{"user.matrix.crossplane.io"},
+			APIGroups: []string{"user.matrix.m.crossplane.io"},
 			Resources: []string{"users", "users/status"},
 			Verbs:     []string{"get", "list", "watch", "update", "patch", "create"},
 		},
 		{
-			APIGroups: []string{"powerlevel.matrix.crossplane.io", "matrix.crossplane.io", "roomalias.matrix.crossplane.io", "room.matrix.crossplane.io", "space.matrix.crossplane.io", "user.matrix.crossplane.io"},
+			APIGroups: []string{"powerlevel.matrix.m.crossplane.io", "matrix.crossplane.io", "roomalias.matrix.m.crossplane.io", "room.matrix.m.crossplane.io", "space.matrix.m.crossplane.io", "user.matrix.m.crossplane.io"},
 			Resources: []string{"*/finalizers"},
 			Verbs:     []string{"update"},
 		},
