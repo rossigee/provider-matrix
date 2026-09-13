@@ -133,7 +133,7 @@ type PowerLevelStatus struct {
 // +kubebuilder:printcolumn:name="ROOM-ID",type="string",JSONPath=".spec.forProvider.roomID"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:subresource:status
-// +kubebuilder:resource:scope=Cluster,categories={crossplane,managed,matrix}
+// +kubebuilder:resource:scope=Namespaced,categories={crossplane,managed,matrix}
 type PowerLevel struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
