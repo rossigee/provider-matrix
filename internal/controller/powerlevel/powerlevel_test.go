@@ -14,12 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package user
+package powerlevel
 
 import (
 	"testing"
 )
 
-func TestUser(t *testing.T) {
+func TestPowerlevel(t *testing.T) {
 	t.Skipf("Test implementation pending")
 }
