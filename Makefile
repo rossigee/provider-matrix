@@ -46,7 +46,7 @@ GO111MODULE = on
 
 UP_VERSION = v0.28.0
 UP_CHANNEL = stable
-UPTEST_VERSION = v0.8.1
+UPTEST_VERSION = v0.11.1
 -include build/makelib/k8s_tools.mk
 
 # Override build.init to be a no-op since UP is not used in the build process
