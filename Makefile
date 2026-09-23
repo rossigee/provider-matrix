@@ -171,4 +171,13 @@ test.coverage:
 
 test.all: test.unit test.clients test.controller test.integration test.simple
 
-.PHONY: cobertura submodules fallback run generate test test.unit test.clients test.controller test.integration test.simple test.all test.working test.coverage
+.PHONY: cobertura submodules fallback run generate test test.unit test.clients test.controller test.integration test.simple test.all test.working test.coverage# === Standardization follow-up: ghcr xpkg-only publish + img neutralization ===
+xpkg.release.publish.ghcr.io/rossigee.provider-matrix:
+	@$(foreach p,$(XPKG_LINUX_PLATFORMS),$(MAKE) xpkg.build.provider-matrix PLATFORM=$(p) || exit 1;)
+	@$(CROSSPLANE_CLI) xpkg push \
+		$(foreach p,$(XPKG_LINUX_PLATFORMS),--package-files $(XPKG_OUTPUT_DIR)/$(p)/provider-matrix-$(VERSION).xpkg ) \
+		ghcr.io/rossigee/provider-matrix:$(VERSION)
+	@$(OK) Pushed package ghcr.io/rossigee/provider-matrix:$(VERSION)
+
+XPKG_REG_ORGS ?= ghcr.io/rossigee
+img.release.publish: ; @echo "img.release neutralized for xpkg-only pattern"
