@@ -15,4 +15,4 @@ ARG TARGETARCH
 ADD bin/$TARGETOS\_$TARGETARCH/provider /usr/local/bin/provider
 
 USER 65532
-ENTRYPOINT ["provider"]
+ENTRYPOINT ["/usr/local/bin/provider"]

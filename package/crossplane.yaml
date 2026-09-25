@@ -98,7 +98,7 @@ metadata:
 
 spec:
   crossplane:
-    version: ">=v1.14.0-0"
+    version: ">=v2.5.0"
   dependsOn:
     - provider: xpkg.upbound.io/crossplane-contrib/provider-kubernetes
       version: ">=v0.4.0"

@@ -9,7 +9,7 @@
 
 ## Container Registry
 
-- **Primary**: `ghcr.io/rossigee/provider-matrix:v0.2.0`
+- **Primary**: `ghcr.io/rossigee/provider-matrix:v0.6.2`
 
 ## Overview
 
