@@ -98,7 +98,7 @@ func setupRBAC(c client.Client, l logging.Logger) error {
 			Verbs:     []string{"get", "list", "watch", "update", "patch", "create"},
 		},
 		{
-			APIGroups: []string{"powerlevel.matrix.m.crossplane.io", "matrix.crossplane.io", "roomalias.matrix.m.crossplane.io", "room.matrix.m.crossplane.io", "space.matrix.m.crossplane.io", "user.matrix.m.crossplane.io"},
+			APIGroups: []string{"powerlevel.matrix.m.crossplane.io", "matrix.m.crossplane.io", "roomalias.matrix.m.crossplane.io", "room.matrix.m.crossplane.io", "space.matrix.m.crossplane.io", "user.matrix.m.crossplane.io"},
 			Resources: []string{"*/finalizers"},
 			Verbs:     []string{"update"},
 		},
