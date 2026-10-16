@@ -3,4 +3,4 @@ kind: Provider
 metadata:
   name: provider-matrix
 spec:
-  package: xpkg.upbound.io/crossplane-contrib/provider-matrix:latest
+  package: ghcr.io/rossigee/provider-matrix:v0.6.2
