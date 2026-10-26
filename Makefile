@@ -6,7 +6,7 @@ PROJECT_REPO := github.com/rossigee/$(PROJECT_NAME)
 
 PLATFORMS ?= linux_amd64 linux_arm64
 CROSSPLANE_VERSION = 2.5.0
-GO_REQUIRED_VERSION ?= 1.27.2
+GO_REQUIRED_VERSION ?= 1.27.3
 
 # Test targets - composes the curated subset actually run on every commit.
 # The build submodule's `test` chain runs `./...`, which we deliberately
