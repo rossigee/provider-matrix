@@ -166,7 +166,9 @@ func setupRBAC(c client.Client, l logging.Logger) error {
 	if err := c.Create(ctx, edit); err != nil && !errors.IsAlreadyExists(err) {
 		l.Info("aggregate-to-edit create warning (non-fatal)", "err", err)
 	}
-	_ = c.Update(ctx, edit)
+	if err := c.Update(ctx, edit); err != nil {
+		l.Info("aggregate-to-edit update warning (non-fatal)", "err", err)
+	}
 
 	// Aggregate-to-view (best effort)
 	view := &rbacv1.ClusterRole{
@@ -182,7 +184,9 @@ func setupRBAC(c client.Client, l logging.Logger) error {
 	if err := c.Create(ctx, view); err != nil && !errors.IsAlreadyExists(err) {
 		l.Info("aggregate-to-view create warning (non-fatal)", "err", err)
 	}
-	_ = c.Update(ctx, view)
+	if err := c.Update(ctx, view); err != nil {
+		l.Info("aggregate-to-view update warning (non-fatal)", "err", err)
+	}
 
 	l.Info("provider self-managed RBAC roles ensured")
 	return nil
