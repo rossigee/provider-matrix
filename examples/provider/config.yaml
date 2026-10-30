@@ -3,4 +3,4 @@ kind: Provider
 metadata:
   name: provider-matrix
 spec:
-  package: ghcr.io/rossigee/provider-matrix:v0.6.2
+  package: ghcr.io/rossigee/provider-matrix:v0.6.3
